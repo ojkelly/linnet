@@ -1,0 +1,25 @@
+.DS_Store
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Dependency directory
+# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
+node_modules
+node_modules/*
+
+# Artifacts
+build/**
+typings/**
+
+yarn-error.log
+.compiled
+
+packages/**/lambda.zip
+packages/**/dist

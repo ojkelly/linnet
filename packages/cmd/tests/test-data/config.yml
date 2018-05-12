@@ -1,0 +1,33 @@
+development:
+  region: ap-southeast-2
+  accountId: 354684684
+  appSync:
+    name: TestAppSync
+    # API_KEY | AWS_IAM | AMAZON_COGNITO_USER_POOLS
+    authenticationType: API_KEY
+            #     userPoolConfig: {
+            #     awsRegion: "STRING_VALUE" /* required */,
+            #     defaultAction: ALLOW | DENY /* required */,
+            #     userPoolId: "STRING_VALUE" /* required */,
+            #     appIdClientRegex: "STRING_VALUE",
+            # },
+
+  schemaFiles: schema/**/*.gql
+  dataSources:
+    DynamoDB:
+      NodeTableName: MyNodeTable
+      serviceRoleArn: arn:aws:iam::354684684:role/appsync-test
+      provisionedThroughput:
+          nodeTable:
+              readCapacityUnits: 5
+              writeCapacityUnits: 5
+          edgeDataTypeIndex:
+              readCapacityUnits: 5
+              writeCapacityUnits: 5
+          namedTypeIdIndex:
+              readCapacityUnits: 5
+              writeCapacityUnits: 5
+    Lambda:
+      System:
+        serviceRoleArn: arn:aws:iam::354684684:role/appsync-lambda
+

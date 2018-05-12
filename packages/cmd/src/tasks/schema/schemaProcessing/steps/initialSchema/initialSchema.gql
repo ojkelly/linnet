@@ -1,0 +1,6 @@
+interface Node {
+    id: ID!
+    createdAt: String!
+    updatedAt: String!
+    createdBy: ID!
+}

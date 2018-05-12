@@ -1,0 +1,14 @@
+type Order implements Node {
+    id: ID!
+    status: ORDER_STATUS
+    customer: Customer! @edge(name: "OrdersOnCustomer")
+    products: [Product]! @edge(name: "ProductsOnOrders", principal: true)
+    price: Int
+    paid: Boolean
+}
+
+enum ORDER_STATUS {
+    UNPAID
+    PAID
+    COMPLETE
+}
