@@ -49,9 +49,7 @@ async function upsertLambda({
                 throw getFunctionError;
             }
         }
-        const lambdaZipPath = path.resolve(
-            `.compiled/lambda/zip/${resolverType}.zip`,
-        );
+        const lambdaZipPath = path.resolve(`.dist/lambda/${resolverType}.zip`);
         console.dir({ lambdaExists });
 
         if (lambdaExists === false) {

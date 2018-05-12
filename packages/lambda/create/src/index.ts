@@ -16,7 +16,7 @@ import {
     Edge,
     EdgePrinciple,
     DataSourceDynamoDBConfig,
-} from "../../../types";
+} from "linnet";
 
 /**
  * Handle the incoming lambda event

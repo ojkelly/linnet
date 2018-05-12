@@ -18,6 +18,11 @@ node_modules/*
 build/**
 typings/**
 
+.dist
+**/.dist
+
+lib
+
 yarn-error.log
 .compiled
 

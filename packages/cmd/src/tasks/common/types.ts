@@ -80,4 +80,9 @@ type TaskContext = {
     };
 };
 
-export { Config, TaskContext };
+export {
+    Config,
+    TaskContext,
+    AppSyncAuthenticationType,
+    UserPoolConfigDefaultAction,
+};

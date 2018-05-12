@@ -9,7 +9,7 @@ import {
 import * as AWS from "aws-sdk";
 import * as AWSXRay from "aws-xray-sdk-core";
 
-import { HandlerEvent, Edge, DataSourceDynamoDBConfig } from "../../../types";
+import { HandlerEvent, Edge, DataSourceDynamoDBConfig } from "linnet";
 
 /**
  * Handle the incoming lambda event

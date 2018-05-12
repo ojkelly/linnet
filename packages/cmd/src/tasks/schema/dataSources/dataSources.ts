@@ -171,5 +171,6 @@ export {
     DataSourceTemplates,
     DataSourceDynamoDBConfig,
     DataSourceLambdaConfig,
+    DataSourceConfig,
     DataSourceElasticSearchConfig,
 };

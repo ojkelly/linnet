@@ -145,4 +145,4 @@ type UpsertOptions = {
 
 // [ Exports ]------------------------------------------------
 
-export { upsert };
+export { upsert, UpsertOptions };

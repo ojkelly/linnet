@@ -9,10 +9,9 @@ import * as context from "aws-lambda-mock-context";
 import * as AWSXRay from "aws-xray-sdk-core";
 import * as faker from "faker";
 
-import { HandlerEvent, CreateInput } from "../../../cmd/src/types";
+import { HandlerEvent, CreateInput, Edge } from "linnet";
 
 import { handler } from "../src/index";
-import { Edge } from "../../../cmd/src/tasks/schema/schemaProcessing/steps/generateArtifacts/extractEdges";
 
 AWS.setSDKInstance(AWS_SDK);
 process.env["AWS_XRAY_CONTEXT_MISSING"] = "LOG_ERROR";
