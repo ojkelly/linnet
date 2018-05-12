@@ -151,6 +151,34 @@ test("Can create nested items", async t => {
             },
             connections: [],
         };
+        const args = {
+            create: {
+                name: "customer name",
+                address: "asdasda",
+                suburb: "w4egrw4g5",
+                postcode: "sfefsd",
+                phoneNumber: "239487y789234",
+                email: "dsarggsdrf@dsfgfsd.sfd",
+                orders: {
+                    create: [
+                        {
+                            status: "COMPLETE",
+                            products: {
+                                create: [
+                                    {
+                                        title: "Product 23423",
+                                        description: "This is another product",
+                                        price: "33",
+                                    },
+                                ],
+                            },
+                            price: 99,
+                            paid: true,
+                        },
+                    ],
+                },
+            },
+        };
 
         const lambdaEvent = {
             linnetFields,
@@ -158,9 +186,8 @@ test("Can create nested items", async t => {
             namedType: "Customer",
             edgeTypes,
             context: {
-                arguments: {
-                    create,
-                },
+                // arguments: create,
+                arguments: args,
                 identity: null,
                 source: null,
                 result: null,

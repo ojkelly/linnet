@@ -3,7 +3,10 @@
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
-    "private": true,
+    "scripts": {
+        "clean": "rimraf ./lib ./.nyc_output ./coverage",
+        "build": "yarn clean && tsc -p tsconfig.json"
+    },
     "dependencies": {
         "aws-xray-sdk-core": "^1.2.0"
     }

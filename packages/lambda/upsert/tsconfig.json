@@ -5,7 +5,7 @@
         "sourceMap": false,
         "strict": true,
         "moduleResolution": "node",
-        "allowJs": false,
+        "allowJs": true,
         "allowSyntheticDefaultImports": false,
         "target": "es2017",
         "module": "commonjs",
@@ -13,8 +13,7 @@
         "isolatedModules": false,
         "lib": ["esnext", "dom"],
         "noEmit": false,
-        "outDir": "./lib/",
-        "declaration": true
+        "outDir": "./lib/"
     },
     "filesGlob": ["./**/*.ts"],
     "exclude": ["**/node_modules", "**/*.spec.ts"]

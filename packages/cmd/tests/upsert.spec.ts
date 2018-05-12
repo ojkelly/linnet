@@ -27,7 +27,7 @@ test.afterEach(t => {
     AWS.restore();
 });
 
-test("Can upsert a schema", async t => {
+test.skip("Can upsert a schema", async t => {
     const apiId: string = "tvlosysspbd6tlyecag3zchc5a";
 
     AWS.mock("AppSync", "listGraphqlApis", (params, callback) => {
@@ -38,7 +38,7 @@ test("Can upsert a schema", async t => {
                     apiId,
                     authenticationType: "API_KEY",
                     arn:
-                        "arn:aws:appsync:ap-southeast-2:577847376662:apis/tvlosysspbd6tlyecag3zchc5a",
+                        "arn:aws:appsync:ap-southeast-2:111111111111111:apis/tvlosysspbd6tlyecag3zchc5a",
                     uris: {
                         GRAPHQL:
                             "https://vpxwn3jgjzhdbbiabm6wzvtedi.appsync-api.ap-southeast-2.amazonaws.com/graphql",
@@ -178,6 +178,35 @@ test("Can upsert a schema", async t => {
                 resolverArn: "",
                 requestMappingTemplate: params.requestMappingTemplate,
                 responseMappingTemplate: params.responseMappingTemplate,
+            },
+        });
+    });
+
+    AWS.mock("Lambda", "getFunction", (params, callback) => {
+        callback(null, {
+            Configuration: {
+                FunctionName: "TestAppSync-development-create",
+                FunctionArn:
+                    "arn:aws:lambda:ap-southeast-2:111111111111111:function:TestAppSync-development-create",
+                Runtime: "nodejs8.10",
+                Role: "arn:aws:iam::111111111111111:role/appsync-lambda",
+                Handler: "lib/index.handler",
+                CodeSize: 9282820,
+                Description: "Lambda function for linnet resolver type: create",
+                Timeout: 30,
+                MemorySize: 256,
+                LastModified: "2018-05-12T05:56:32.303+0000",
+                CodeSha256: "Ro8gKy9GtWArCO0H2q01nAv8+VzkOCU10h5iwbddRAw=",
+                Version: "$LATEST",
+                VpcConfig: [Object],
+                KMSKeyArn: null,
+                TracingConfig: [Object],
+                MasterArn: null,
+                RevisionId: "6cc23eca-927a-4b37-b36c-fc108142dca5",
+            },
+            Code: {
+                RepositoryType: "S3",
+                Location: "",
             },
         });
     });

@@ -12,11 +12,13 @@ async function generateInitialSchema({
 }): Promise<string> {
     try {
         // Load the Node interface from disk
-        const nodeTypeDef: string = await fs.readFile(
-            path.resolve(__dirname + "/initialSchema.gql"),
-            "utf8",
-        );
-
+        const nodeTypeDef: string = `
+        interface Node {
+          id: ID!
+          createdAt: String!
+          updatedAt: String!
+          createdBy: ID!
+      }`;
         // Merge it with the users typedefs
         return mergeStrings([typeDefs, nodeTypeDef]);
     } catch (err) {

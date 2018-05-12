@@ -5,10 +5,10 @@
     "author": "Owen Kelly <owen@owenkelly.com.au>",
     "description": "Create, update and manage your AWS AppSync API",
     "private": true,
-    "workspaces": ["packages/cmd", "packages/lambda/**"],
+    "workspaces": ["packages/cmd"],
     "scripts": {
         "dev": "ava-ts ./**/*.spec.ts --watch",
-        "cli": "ts-node packages/cmd/src/index",
+        "cli": "node packages/cmd/lib/index",
         "dev-aws":
             "ts-node tests/assumeRole.ts assumeRole --command 'ava-ts ./tests/**/*.spec.ts --watch'",
         "debug": "DEBUG='wahn:*,bunjil:*' yarn dev",
@@ -19,9 +19,9 @@
         "lambda:clean": "rm -rf ./.dist/lambda",
         "lambda:createDirs": "mkdir -p ./.dist/lambda",
         "lambda:init":
-            "find packages/lambda/ -type d -maxdepth 1 -mindepth 1 -exec cd {} \\; -exec yarn install --production \\;",
+            "find packages/lambda/ -type d -maxdepth 1 -mindepth 1 -exec bash -c 'cd {} && npm install' \\;",
         "lambda:build":
-            "find packages/lambda/ -type d -maxdepth 1 -mindepth 1 -exec cd {} \\; -exec yarn build \\;",
+            "find packages/lambda/ -type d -maxdepth 1 -mindepth 1 -exec bash -c ' cd {} && pwd && yarn build' \\;",
         "lambda:zip":
             "ls -t packages/lambda | head -n 3 | xargs -I '{}' bash -c 'cd packages/lambda/{} && zip -rq ../../../.dist/lambda/{}.zip  ./*'",
         "unit": "nyc ava",

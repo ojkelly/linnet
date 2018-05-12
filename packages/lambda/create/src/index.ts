@@ -29,11 +29,11 @@ async function handler(event: HandlerEvent, context: Context) {
     try {
         // Xray Tracing
         // subsegment.addAnnotation("Environment", process.env["ENV"]);
-        subsegment.addAnnotation("NamedType", event.namedType);
+        subsegment.addAnnotation("NamedType", `${event.namedType}`);
         subsegment.addAnnotation("ResolverType", "create");
         AWSXRay.capturePromise();
 
-        // console.log(JSON.stringify(event));
+        console.log(JSON.stringify(event));
 
         // Process the event
         if (typeof event.context.arguments.create === "undefined") {
@@ -45,7 +45,7 @@ async function handler(event: HandlerEvent, context: Context) {
             dataSource: event.dataSource,
             namedType: event.namedType,
             edgeTypes: event.edgeTypes,
-            create: event.context.arguments.create,
+            createInput: event.context.arguments,
             source: event.context.source,
         });
 
@@ -70,7 +70,7 @@ async function processEvent({
     dataSource,
     namedType,
     edgeTypes,
-    create,
+    createInput,
     source,
 }: {
     segment: any;
@@ -78,21 +78,36 @@ async function processEvent({
     dataSource: DataSourceDynamoDBConfig;
     namedType: string;
     edgeTypes: Edge[];
-    create: CreateInput;
+    createInput: CreateInput;
     source: any;
 }): Promise<any> {
     const subsegment = segment.addNewSubsegment("processEvent");
     try {
-        const items = generateCreate({
+        console.log(
+            "processEvent",
+            JSON.stringify({
+                segment,
+                linnetFields,
+                dataSource,
+                namedType,
+                edgeTypes,
+                createInput,
+                source,
+            }),
+        );
+
+        const items = await generateCreate({
             segment,
             linnetFields,
             dataSource,
             namedType,
             edgeTypes,
-            create,
+            createInput,
             source,
         });
         // console.dir(items);
+        subsegment.close();
+        return items;
     } catch (error) {
         console.error("processEvent", error.message);
         subsegment.addError(error.message, false);
@@ -105,13 +120,13 @@ async function processEvent({
  * Starting from the root node, generate all new Nodes and connections
  * @param options
  */
-function generateCreate({
+async function generateCreate({
     segment,
     linnetFields,
     dataSource,
     namedType,
     edgeTypes,
-    create,
+    createInput,
     source,
 }: {
     segment: any;
@@ -119,13 +134,14 @@ function generateCreate({
     dataSource: DataSourceDynamoDBConfig;
     namedType: string;
     edgeTypes: Edge[];
-    create: CreateInput;
+    createInput: CreateInput;
     source: any;
-}): any {
+}): Promise<any> {
     const subsegment = segment.addNewSubsegment("generateCreate");
     try {
         const createdAt = Date.now();
         const updatedAt = createdAt;
+        console.log({ createInput });
 
         // TODO: This needs to be updated to reflect the user who created this node
         const createdBy = "linnet";
@@ -137,8 +153,11 @@ function generateCreate({
             createdAt,
             updatedAt,
             createdBy,
-            createInput: create,
+            createInput,
         });
+
+        console.log({ items });
+        console.log("items length:", items.length);
 
         const dynamoDB: AWS.DynamoDB = AWSXRay.captureAWSClient(
             new AWS.DynamoDB({
@@ -157,10 +176,15 @@ function generateCreate({
             },
         };
 
-        const batchWriteItem = dynamoDB
+        console.log(JSON.stringify(batchWriteParams));
+
+        const batchWriteItem = await dynamoDB
             .batchWriteItem(batchWriteParams)
             .promise();
         console.dir(batchWriteItem);
+        subsegment.close();
+
+        return batchWriteItem;
     } catch (error) {
         console.error("processEvent", error.message);
         subsegment.addError(error.message, false);
@@ -197,7 +221,6 @@ function generateWriteItem({
 }) {
     const subsegment = segment.addNewSubsegment("generateWriteItem");
     try {
-        // var marshalled = AWS.DynamoDB.Converter.marshall({})
         const items: any[] = [];
 
         const edgesOnThisType: Edge[] = edgeTypes
@@ -224,7 +247,7 @@ function generateWriteItem({
                 // Create the Node
                 const node = {
                     id: nodeId,
-                    "linnet:DataType": "Node",
+                    "linnet:dataType": "Node",
                     "linnet:namedType": namedType,
                 };
 
@@ -232,7 +255,7 @@ function generateWriteItem({
                 Object.keys(createNode).forEach(fieldName => {
                     const field = createNode[fieldName];
 
-                    const edge = edgesOnThisType.find(
+                    const edge: Edge = edgesOnThisType.find(
                         edge => edge.field == fieldName,
                     );
 
@@ -252,30 +275,40 @@ function generateWriteItem({
                             createdBy,
                             createInput: field,
                         });
+                        console.log("nested");
+                        console.dir(nestedItems);
                         nestedItems.forEach(nestedItem => {
-                            let edgeDataType: string;
-                            let edgeNamedType: string;
-                            let edgeNodeId: string;
+                            if (
+                                nestedItem["linnet:dataType"] === "Node" &&
+                                nestedItem["linnet:namedType"] ===
+                                    edge.fieldType
+                            ) {
+                                let edgeDataType: string;
+                                let edgeNamedType: string;
+                                let edgeNodeId: string;
 
-                            if (edge.principal === EdgePrinciple.TRUE) {
-                                edgeDataType = `${edge.edgeName}::${nodeId}`;
-                                edgeNamedType = namedType;
-                                edgeNodeId = nodeId;
-                            } else {
-                                edgeDataType = `${edge.edgeName}::${
-                                    nestedItem.id
-                                }`;
-                                edgeNamedType = edge.counterpart.type;
-                                edgeNodeId = nestedItem.id;
+                                if (edge.principal === EdgePrinciple.TRUE) {
+                                    edgeDataType = `${
+                                        edge.edgeName
+                                    }::${nodeId}`;
+                                    edgeNamedType = namedType;
+                                    edgeNodeId = nodeId;
+                                } else {
+                                    edgeDataType = `${edge.edgeName}::${
+                                        nestedItem.id
+                                    }`;
+                                    edgeNamedType = edge.counterpart.type;
+                                    edgeNodeId = nestedItem.id;
+                                }
+                                const itemEdge = {
+                                    id: nodeId,
+                                    "linnet:dataType": edgeDataType,
+                                    "linnet:namedType": edgeNamedType,
+                                    "linnet:edge": edgeNodeId,
+                                };
+                                items.push(itemEdge);
                             }
-                            const itemEdge = {
-                                id: nodeId,
-                                "linnet:DataType": edgeDataType,
-                                "linnet:namedType": edgeNamedType,
-                                "linnet:edge": edgeNodeId,
-                            };
                             items.push(nestedItem);
-                            items.push(itemEdge);
                         });
                     }
                 });
@@ -298,6 +331,7 @@ function generateWriteItem({
         }
 
         // Create the Connections and any nested Nodes
+        subsegment.close();
 
         return items;
     } catch (error) {

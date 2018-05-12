@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 import * as program from "commander";
 import { upsert } from "./commands/upsert";
 import * as Ora from "ora";

@@ -40,7 +40,6 @@ async function upsertLambda({
             let getFunction: AWS.Lambda.GetFunctionResponse = await lambda
                 .getFunction(getFunctionParams)
                 .promise();
-            console.dir({ getFunction });
             if (getFunction.Configuration.FunctionName === functionName) {
                 lambdaExists = true;
             }
@@ -50,7 +49,6 @@ async function upsertLambda({
             }
         }
         const lambdaZipPath = path.resolve(`.dist/lambda/${resolverType}.zip`);
-        console.dir({ lambdaExists });
 
         if (lambdaExists === false) {
             observer.next(`Creating new lambda ${functionName}`);
@@ -66,10 +64,14 @@ async function upsertLambda({
                 Role: config.dataSources.Lambda.System.serviceRoleArn,
                 Runtime: "nodejs8.10",
                 Timeout: 30,
+                TracingConfig: {
+                    Mode: "Active",
+                },
             };
             const createFunction: AWS.Lambda.Types.FunctionConfiguration = await lambda
                 .createFunction(createLambdaParams)
                 .promise();
+            console.dir({ createFunction });
 
             const createAliasParams: AWS.Lambda.CreateAliasRequest = {
                 FunctionName: createFunction.FunctionName,
@@ -79,6 +81,7 @@ async function upsertLambda({
             const createAlias: AWS.Lambda.Types.AliasConfiguration = await lambda
                 .createAlias(createAliasParams)
                 .promise();
+            console.dir({ createAlias });
         } else {
             const updateFunctionCodeParams: AWS.Lambda.UpdateFunctionCodeRequest = {
                 ZipFile: await fs.readFile(lambdaZipPath),
@@ -88,6 +91,7 @@ async function upsertLambda({
             const updateFunctionCode: AWS.Lambda.Types.FunctionConfiguration = await lambda
                 .updateFunctionCode(updateFunctionCodeParams)
                 .promise();
+            console.dir({ updateFunctionCode });
 
             const updateAliasParams: AWS.Lambda.UpdateAliasRequest = {
                 FunctionName: updateFunctionCode.FunctionName,
@@ -97,6 +101,7 @@ async function upsertLambda({
             const updateAlias: AWS.Lambda.Types.AliasConfiguration = await lambda
                 .updateAlias(updateAliasParams)
                 .promise();
+            console.dir({ updateAlias });
         }
     } catch (error) {
         if (error.code === "ResourceInUseException") {
