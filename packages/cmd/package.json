@@ -1,6 +1,6 @@
 {
   "name": "linnet",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "author": "Owen Kelly <owen@owenkelly.com.au>",
   "description": "Create, update and manage your AWS AppSync API",
