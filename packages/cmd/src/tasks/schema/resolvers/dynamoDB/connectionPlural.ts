@@ -37,7 +37,7 @@ function generateRequestTemplate({
     const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
 
     let edge = edges[0];
-
+    //TODO: this isn't getting the edge back, and it needs to return edges
     return `${headerString}
 
 #set($isPrinciple = "${edge.principal}")
@@ -48,9 +48,9 @@ function generateRequestTemplate({
 #end
 
 #set($ids = [])
-#foreach($item in $ctx.source)
+#foreach($item in $ctx.source.edges)
   #set($map = {})
-  $util.qr($map.put("id", $util.dynamodb.toString($item[$keyName])))
+  $util.qr($map.put("id", $util.dynamodb.toString($item)))
   $util.qr($map.put("linnet:dataType", $util.dynamodb.toString("Node")))
   $util.qr($ids.add($map))
 #end

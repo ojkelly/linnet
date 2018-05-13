@@ -48,9 +48,9 @@ function generateRequestTemplate({
 #end
 
 #set($ids = [])
-#foreach($item in $ctx.source)
+#foreach($item in $ctx.source.edge)
   #set($map = {})
-  $util.qr($map.put("id", $util.dynamodb.toString($item[$keyName])))
+  $util.qr($map.put("id", $util.dynamodb.toString($item)))
   $util.qr($map.put("linnet:dataType", $util.dynamodb.toString("Node")))
   $util.qr($ids.add($map))
 #end

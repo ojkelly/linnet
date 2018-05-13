@@ -92,7 +92,7 @@ function createEdgeTypes({
                                         name: {
                                             kind: "Name",
                                             value: `${pluralize.singular(
-                                                node.name.value,
+                                                edge.fieldType,
                                             )}Connection`,
                                         },
                                     };
@@ -146,7 +146,7 @@ function createEdgeTypes({
                                         name: {
                                             kind: "Name",
                                             value: `${pluralize.plural(
-                                                node.name.value,
+                                                edge.fieldType,
                                             )}Connection`,
                                         },
                                     };

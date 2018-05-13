@@ -378,27 +378,26 @@ function getRootNode({
                         if (edge.principal === EdgePrinciple.TRUE) {
                             if (item.id === rootNode.id) {
                                 if (edge.cardinality === "ONE") {
-                                    edgeFields[edge.field] =
-                                        item["linnet:edge"];
+                                    edgeFields[edge.field] = {
+                                        edge: item["linnet:edge"],
+                                    };
                                 } else if (edge.cardinality === "MANY") {
                                     if (
                                         typeof rootNode[edge.field] ==
                                         "undefined"
                                     ) {
-                                        edgeFields[edge.field] = {
-                                            edge: item["linnet:edge"],
-                                        };
+                                        edgeFields[edge.field] = { edges: [] };
                                     }
-                                    edgeFields[edge.field].edge =
-                                        item["linnet:edge"];
+                                    edgeFields[edge.field].edges.push(item.id);
                                 }
                             }
                         } else if (edge.principal === EdgePrinciple.FALSE) {
                             if (item["linnet:edge"] === rootNode.id) {
                                 rootNode[edge.field] = item.id;
                                 if (edge.cardinality === "ONE") {
-                                    edgeFields[edge.field] =
-                                        item["linnet:edge"];
+                                    edgeFields[edge.field] = {
+                                        edge: item["linnet:edge"],
+                                    };
                                 } else if (edge.cardinality === "MANY") {
                                     if (
                                         typeof rootNode[edge.field] ==

@@ -82,7 +82,7 @@ function updateDataSources({ context }: { context: TaskContext }) {
                 resolverType,
                 lambdaFunctionArn: `arn:aws:lambda:${context.config.region}:${
                     context.config.accountId
-                }:function:${functionName}:linnet`,
+                }:function:${functionName}`,
             },
         };
         context.schema.dataSourceTemplates[dataSourceName] = newDataSource;
