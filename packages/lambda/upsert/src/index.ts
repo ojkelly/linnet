@@ -80,4 +80,4 @@ async function processEvent({
     }
 }
 
-export { handler };
+export { handler, HandlerEvent, Edge, DataSourceDynamoDBConfig };

@@ -28,7 +28,7 @@ const edgeTypes: Edge[] = [
         edgeName: "OrdersOnCustomer",
         required: false,
         counterpart: {
-            type: "Customer",
+            type: "Order",
             field: "customer",
         },
     },
@@ -41,7 +41,7 @@ const edgeTypes: Edge[] = [
         edgeName: "OrdersOnCustomer",
         required: true,
         counterpart: {
-            type: "Order",
+            type: "Customer",
             field: "orders",
         },
     },
@@ -54,7 +54,7 @@ const edgeTypes: Edge[] = [
         edgeName: "ProductsOnOrders",
         required: true,
         counterpart: {
-            type: "Order",
+            type: "Product",
             field: "orders",
         },
     },
@@ -67,7 +67,7 @@ const edgeTypes: Edge[] = [
         edgeName: "ProductsOnOrders",
         required: false,
         counterpart: {
-            type: "Product",
+            type: "Order",
             field: "products",
         },
     },

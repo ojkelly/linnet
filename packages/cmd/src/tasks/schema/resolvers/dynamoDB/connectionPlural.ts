@@ -11,13 +11,11 @@ import {
     DataSourceTemplate,
     DataSourceTemplates,
     DataSourceDynamoDBConfig,
-    DataSourceLambdaConfig,
 } from "../../dataSources/dataSources";
 import {
     Edge,
     EdgePrinciple,
 } from "../../schemaProcessing/steps/generateArtifacts/extractEdges";
-import * as pluralize from "pluralize";
 
 function generateRequestTemplate({
     fieldName,
@@ -38,23 +36,33 @@ function generateRequestTemplate({
 }): string | any {
     const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
 
-    // We need to add config data to the request template, that will be pushed to the lambda function
+    let edge = edges[0];
+
     return `${headerString}
 
-#set($payload = {})
+#set($isPrinciple = "${edge.principal}")
+#if($isPrinciple == "${EdgePrinciple.TRUE}")
+  #set($keyName = 'id')
+#elseif($isPrinciple == "${EdgePrinciple.FALSE}")
+  #set($keyName = 'edge')
+#end
 
-
-#set($payload.linnetFields = $linnetFields)
-#set($payload.dataSource = ${JSON.stringify(dataSourceConfig)})
-
-#set($payload.namedType = "${namedType}")
-#set($payload.edgeTypes = ${JSON.stringify(edges)})
-
-#set($payload.context = $context)
+#set($ids = [])
+#foreach($item in $ctx.source)
+  #set($map = {})
+  $util.qr($map.put("id", $util.dynamodb.toString($item[$keyName])))
+  $util.qr($map.put("linnet:dataType", $util.dynamodb.toString("Node")))
+  $util.qr($ids.add($map))
+#end
 {
-  "version": "2017-02-28",
-  "operation": "Invoke",
-  "payload": $util.toJson($payload),
+  "version" : "2018-05-29",
+  "operation" : "BatchGetItem",
+  "tables" : {
+    "${dataSourceConfig.tableName}": {
+          "keys": $util.toJson($ids),
+          "consistentRead": true
+      }
+  }
 }
 `;
 }
@@ -79,9 +87,13 @@ function generateResponseTemplate({
     const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
 
     return `${headerString}
-
-$util.toJson($ctx.result)
+$util.toJson($ctx.result.data["${dataSourceConfig.tableName}"]),
 `;
 }
+
+// {
+//   "edges": $util.toJson($context.result.items),
+//   "nextToken": $util.toJson($context.result.nextToken)
+//   }
 
 export { generateRequestTemplate, generateResponseTemplate };

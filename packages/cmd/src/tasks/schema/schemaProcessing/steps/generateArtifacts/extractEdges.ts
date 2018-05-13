@@ -165,9 +165,9 @@ function validateEdges({ edges }: { edges: Edge[] }): Edge[] {
         edges.forEach(compareEdge => {
             if (edge.edgeName === compareEdge.edgeName) {
                 matchingEdgesFound = matchingEdgesFound + 1;
-                if (edge.fieldType !== compareEdge.fieldType) {
+                if (edge.typeName !== compareEdge.typeName) {
                     updatedEdge.counterpart = {
-                        type: compareEdge.fieldType,
+                        type: compareEdge.typeName,
                         field: compareEdge.field,
                     };
                 }
@@ -214,6 +214,10 @@ type Edge = {
 
     cardinality: EdgeCardinality | string;
 
+    // If the pricinple is true then
+    // linnet:edge === typeName.id
+    // else
+    // id === nestedItem.id
     principal: EdgePrinciple | string;
     // The vertex on the other side of the edge
     counterpart?: {

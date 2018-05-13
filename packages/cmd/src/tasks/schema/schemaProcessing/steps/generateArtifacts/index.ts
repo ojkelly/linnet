@@ -152,6 +152,7 @@ async function generateArtifacts({
         newInputTypes,
         dataSourceTemplates,
         config,
+        edges,
     });
 
     // // [ Extract Edges ]----------------------------------------------------------------------------

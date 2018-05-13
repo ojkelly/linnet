@@ -76,9 +76,24 @@ function generateResolverMappingTemplates({
                         ] = generateDynamoDBResolverTemplate({
                             dataSource,
                             typeName: field,
-                            fieldName: "edges",
+                            fieldName: "edge",
                             fieldType: queryTypeMap[field],
                             resolverType: "connection",
+                            namedType: newTypeDataSourceMap.query[field].name,
+                            edges,
+                        });
+                    } else if (
+                        newTypeDataSourceMap.query[field].resolverType ===
+                        "connectionPlural"
+                    ) {
+                        resolverTemplates[
+                            field
+                        ] = generateDynamoDBResolverTemplate({
+                            dataSource,
+                            typeName: field,
+                            fieldName: "edges",
+                            fieldType: queryTypeMap[field],
+                            resolverType: "connectionPlural",
                             namedType: newTypeDataSourceMap.query[field].name,
                             edges,
                         });

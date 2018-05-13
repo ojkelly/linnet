@@ -33,6 +33,7 @@ import { formatString, formatAst } from "gql-format";
 import * as pluralize from "pluralize";
 import { directives } from "../../../../util/directives";
 import { Config } from "../../../../../common/types";
+import { Edge, EdgeCardinality } from "../extractEdges";
 
 /**
  * Add the following Mutations
@@ -69,20 +70,31 @@ function createTypes({
     newTypeFields,
     newTypeDataSourceMap,
     newInputTypes,
+    edges,
 }: {
     node: ObjectTypeDefinitionNode;
     type: GraphQLType;
     newTypeFields: any;
     newTypeDataSourceMap: any;
     newInputTypes: any;
+    edges: Edge[];
 }) {
     // TODO: add directive to prevent generation of 'many' types (to prevent Query.users)
 
+    const connectionPluralObjectType: GraphQLObjectType = new GraphQLObjectType(
+        {
+            name: `${pluralize.plural(node.name.value)}Connection`,
+            fields: () => ({
+                edges: { type: new GraphQLList(type) },
+                nextToken: { type: GraphQLString },
+            }),
+        },
+    );
+
     const connectionObjectType: GraphQLObjectType = new GraphQLObjectType({
-        name: `${node.name.value}Connection`,
+        name: `${pluralize.singular(node.name.value)}Connection`,
         fields: () => ({
-            edges: { type: new GraphQLList(type) },
-            nextToken: { type: GraphQLString },
+            edge: { type: type as GraphQLObjectType },
         }),
     });
 
@@ -123,9 +135,9 @@ function createTypes({
     };
 
     // [ query Connection ]-------------------------------------------------------------------
-    newTypeFields.query[`${node.name.value}Connection`] = {
-        name: `${node.name.value}Connection`,
-        type: connectionObjectType,
+    newTypeFields.query[`${pluralize.plural(node.name.value)}Connection`] = {
+        name: `${pluralize.plural(node.name.value)}Connection`,
+        type: connectionPluralObjectType,
         args: {
             where: {
                 type: new GraphQLNonNull(
@@ -136,11 +148,32 @@ function createTypes({
             limit: { type: GraphQLInt },
         },
     };
-    newTypeDataSourceMap.query[`${node.name.value}Connection`] = {
+    newTypeDataSourceMap.query[
+        `${pluralize.plural(node.name.value)}Connection`
+    ] = {
+        name: node.name.value,
+        resolverType: "connectionPlural",
+    };
+
+    newTypeFields.query[`${pluralize.singular(node.name.value)}Connection`] = {
+        name: `${pluralize.singular(node.name.value)}Connection`,
+        type: connectionObjectType,
+        args: {
+            where: {
+                type: new GraphQLNonNull(
+                    newInputTypes[`${node.name.value}WhereUnique`],
+                ),
+            },
+            nextToken: { type: GraphQLString },
+            limit: { type: GraphQLInt },
+        },
+    };
+    newTypeDataSourceMap.query[
+        `${pluralize.singular(node.name.value)}Connection`
+    ] = {
         name: node.name.value,
         resolverType: "connection",
     };
-
     // [ create ]-----------------------------------------------------------------------------------
     newTypeFields.mutation[`create${node.name.value}`] = {
         name: `create${node.name.value}`,

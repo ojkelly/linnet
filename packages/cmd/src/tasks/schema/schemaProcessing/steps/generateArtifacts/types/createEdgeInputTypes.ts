@@ -77,19 +77,19 @@ function createEdgeInputTypes({
 
         if (typeof edge !== "undefined") {
             const createInputName = `${
-                edge.counterpart.type
+                edge.typeName
             }CreateWithout${capitalizeFirstLetter(typeFieldKey)}`;
 
             const createManyInputName = `${
-                edge.counterpart.type
+                edge.typeName
             }CreateManyWithout${capitalizeFirstLetter(typeFieldKey)}`;
 
             const updateInputName = `${
-                edge.counterpart.type
+                edge.typeName
             }UpdateWithout${capitalizeFirstLetter(typeFieldKey)}`;
 
             const updateManyInputName = `${
-                edge.counterpart.type
+                edge.typeName
             }UpdateManyWithout${capitalizeFirstLetter(typeFieldKey)}`;
 
             // [ inputTypes ]-------------------------------------------------------------------------------

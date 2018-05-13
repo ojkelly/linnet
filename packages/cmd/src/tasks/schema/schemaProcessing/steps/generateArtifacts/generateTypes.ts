@@ -17,6 +17,7 @@ function generateTypes({
     newInputTypes,
     dataSourceTemplates,
     config,
+    edges,
 }) {
     visit(ast, {
         enter: (
@@ -58,6 +59,7 @@ function generateTypes({
                                     newTypeFields,
                                     newTypeDataSourceMap,
                                     newInputTypes,
+                                    edges,
                                 });
 
                                 // Parse this node, and extract the resolverMapping,

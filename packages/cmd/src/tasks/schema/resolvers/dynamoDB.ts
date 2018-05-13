@@ -34,6 +34,7 @@ import * as deleteManyGenerator from "./dynamoDB/delete";
 import * as edgeGenerator from "./dynamoDB/edge";
 import * as pluralGenerator from "./dynamoDB/plural";
 import * as connectionGenerator from "./dynamoDB/connection";
+import * as connectionPluralGenerator from "./dynamoDB/connectionPlural";
 import * as queryGenerator from "./dynamoDB/query";
 import * as updateGenerator from "./dynamoDB/update";
 import * as updateManyGenerator from "./dynamoDB/updateMany";
@@ -168,6 +169,16 @@ function generateRequestTemplate({
                 edges,
                 headerString,
             });
+        case "connectionPlural":
+            return connectionPluralGenerator.generateRequestTemplate({
+                fieldName,
+                fieldType,
+                namedType,
+                dataSource,
+                resolverType,
+                edges,
+                headerString,
+            });
         case "plural":
             return pluralGenerator.generateRequestTemplate({
                 fieldName,
@@ -252,7 +263,7 @@ function generateRequestTemplate({
             });
         default:
             throw new Error(
-                `Can't generate resolver request tempalte, unknown type: ${resolverType}`,
+                `Can't generate resolver request template, unknown type: ${resolverType}`,
             );
     }
 }
@@ -306,6 +317,16 @@ function generateResponseTemplate({
                 resolverType,
                 edges,
                 headerString: header,
+            });
+        case "connectionPlural":
+            return connectionPluralGenerator.generateResponseTemplate({
+                fieldName,
+                fieldType,
+                namedType,
+                dataSource,
+                resolverType,
+                edges,
+                headerString,
             });
         case "plural":
             return pluralGenerator.generateResponseTemplate({
@@ -391,7 +412,7 @@ function generateResponseTemplate({
             });
         default:
             throw new Error(
-                `Can't generate resolver response tempalte, unknown type: ${resolverType}`,
+                `Can't generate resolver response template, unknown type: ${resolverType}`,
             );
     }
 }

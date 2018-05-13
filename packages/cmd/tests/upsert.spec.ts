@@ -27,7 +27,7 @@ test.afterEach(t => {
     AWS.restore();
 });
 
-test.skip("Can upsert a schema", async t => {
+test("Can upsert a schema", async t => {
     const apiId: string = "tvlosysspbd6tlyecag3zchc5a";
 
     AWS.mock("AppSync", "listGraphqlApis", (params, callback) => {
