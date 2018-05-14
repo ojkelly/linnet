@@ -211,6 +211,39 @@ test("Can upsert a schema", async t => {
         });
     });
 
+    AWS.mock("Lambda", "updateFunctionCode", (params, callback) => {
+        callback(null, {
+            FunctionName: "TestAppSync-development-create",
+            FunctionArn:
+                "arn:aws:lambda:ap-southeast-2:111111111111111:function:TestAppSync-development-create:24",
+            Runtime: "nodejs8.10",
+            Role: "arn:aws:iam::111111111111111:role/appsync-lambda",
+            Handler: "lib/index.handler",
+            CodeSize: 35241002,
+            Description: "Lambda function for linnet resolver type: create",
+            Timeout: 30,
+            MemorySize: 256,
+            LastModified: "2018-05-14T07:58:31.937+0000",
+            CodeSha256: "LIsJl4Be14mAlsLD7JTVJT4D6gJh7aizvCCV/eOu1hA=",
+            Version: "24",
+            VpcConfig: { SubnetIds: [], SecurityGroupIds: [], VpcId: "" },
+            KMSKeyArn: null,
+            TracingConfig: { Mode: "PassThrough" },
+            MasterArn: null,
+            RevisionId: "cdf9a219-82ae-41b0-a09e-9ea1c39ecd1a",
+        });
+    });
+    AWS.mock("Lambda", "updateFunctionCode", (params, callback) => {
+        callback(null, {
+            AliasArn:
+                "arn:aws:lambda:ap-southeast-2:111111111111111:function:TestAppSync-development-create:linnet",
+            Name: "linnet",
+            FunctionVersion: "24",
+            Description: "",
+            RevisionId: "8438372d-478b-4480-9d21-b25f2a237957",
+        });
+    });
+
     const result: boolean = await upsert({
         verbose: true,
         configFile: "./packages/cmd/tests/test-data/config.yml",

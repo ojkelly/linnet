@@ -81,16 +81,6 @@ function createTypes({
 }) {
     // TODO: add directive to prevent generation of 'many' types (to prevent Query.users)
 
-    const connectionPluralObjectType: GraphQLObjectType = new GraphQLObjectType(
-        {
-            name: `${pluralize.plural(node.name.value)}Connection`,
-            fields: () => ({
-                edges: { type: new GraphQLList(type) },
-                nextToken: { type: GraphQLString },
-            }),
-        },
-    );
-
     const connectionObjectType: GraphQLObjectType = new GraphQLObjectType({
         name: `${pluralize.singular(node.name.value)}Connection`,
         fields: () => ({
@@ -135,45 +125,99 @@ function createTypes({
     };
 
     // [ query Connection ]-------------------------------------------------------------------
-    newTypeFields.query[`${pluralize.plural(node.name.value)}Connection`] = {
-        name: `${pluralize.plural(node.name.value)}Connection`,
-        type: connectionPluralObjectType,
-        args: {
-            where: {
-                type: new GraphQLNonNull(
-                    newInputTypes[`${node.name.value}Where`],
-                ),
-            },
-            nextToken: { type: GraphQLString },
-            limit: { type: GraphQLInt },
-        },
-    };
-    newTypeDataSourceMap.query[
-        `${pluralize.plural(node.name.value)}Connection`
-    ] = {
-        name: node.name.value,
-        resolverType: "connectionPlural",
-    };
-
-    newTypeFields.query[`${pluralize.singular(node.name.value)}Connection`] = {
-        name: `${pluralize.singular(node.name.value)}Connection`,
-        type: connectionObjectType,
+    newTypeFields.query[`${node.name.value}Connection`] = {
+        name: `${node.name.value}}Connection`,
+        type: new GraphQLObjectType({
+            name: `${node.name.value}Connection`,
+            fields: () => ({
+                edge: { type: type as GraphQLObjectType },
+            }),
+        }),
         args: {
             where: {
                 type: new GraphQLNonNull(
                     newInputTypes[`${node.name.value}WhereUnique`],
                 ),
             },
-            nextToken: { type: GraphQLString },
-            limit: { type: GraphQLInt },
         },
     };
-    newTypeDataSourceMap.query[
-        `${pluralize.singular(node.name.value)}Connection`
-    ] = {
-        name: node.name.value,
+    newTypeDataSourceMap.query[`${node.name.value}Connection`] = {
+        name: `${node.name.value}Connection`,
         resolverType: "connection",
     };
+    newTypeFields.query[`${node.name.value}Connection`] = {
+        name: `${node.name.value}}Connection`,
+        type: new GraphQLObjectType({
+            name: `${node.name.value}Connection`,
+            fields: () => ({
+                edges: { type: new GraphQLList(type as GraphQLObjectType) },
+            }),
+        }),
+        args: {
+            where: {
+                type: new GraphQLNonNull(
+                    newInputTypes[`${node.name.value}WhereUnique`],
+                ),
+                nextToken: { type: GraphQLString },
+                limit: { type: GraphQLInt },
+            },
+        },
+    };
+    newTypeDataSourceMap.query[`${node.name.value}Connection`] = {
+        name: `${node.name.value}Connection`,
+        resolverType: "connection",
+    };
+    // const edgesOnType = edges.forEach(edge => {
+    //     if (edge.typeName === node.name.value) {
+    //         console.log(`${edge.edgeName}Connection`);
+    //         let args = {};
+    //         if (edge.cardinality === EdgeCardinality.MANY) {
+    //             args = {
+    //                 where: {
+    //                     type: new GraphQLNonNull(
+    //                         newInputTypes[`${edge.fieldType}Where`],
+    //                     ),
+    //                 },
+    //                 nextToken: { type: GraphQLString },
+    //                 limit: { type: GraphQLInt },
+    //             };
+    //         } else if (edge.cardinality === EdgeCardinality.ONE) {
+    //             args = {
+    //                 where: {
+    //                     type: new GraphQLNonNull(
+    //                         newInputTypes[`${edge.fieldType}WhereUnique`],
+    //                     ),
+    //                 },
+    //             };
+    //         }
+
+    //         newTypeFields.query[`${edge.edgeName}Connection`] = {
+    //             name: `${edge.edgeName}}Connection`,
+    //             type: new GraphQLObjectType({
+    //                 name: `${edge.edgeName}Connection`,
+    //                 fields: () => {
+    //                     if (edge.cardinality === EdgeCardinality.MANY) {
+    //                         return {
+    //                             edges: { type: type as GraphQLObjectType },
+    //                             nextToken: { type: GraphQLString },
+    //                         };
+    //                     } else if (edge.cardinality === EdgeCardinality.ONE) {
+    //                         return {
+    //                             edge: { type: type as GraphQLObjectType },
+    //                         };
+    //                     }
+    //                 },
+    //             }),
+    //             args,
+    //         };
+    //         newTypeDataSourceMap.query[`${edge.edgeName}Connection`] = {
+    //             name: edge.edgeName,
+    //             edge,
+    //             resolverType: "connection",
+    //         };
+    //     }
+    // });
+
     // [ create ]-----------------------------------------------------------------------------------
     newTypeFields.mutation[`create${node.name.value}`] = {
         name: `create${node.name.value}`,

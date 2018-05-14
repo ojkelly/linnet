@@ -91,9 +91,7 @@ function createEdgeTypes({
                                         kind: "NamedType",
                                         name: {
                                             kind: "Name",
-                                            value: `${pluralize.singular(
-                                                edge.fieldType,
-                                            )}Connection`,
+                                            value: `${edge.edgeName}Connection`,
                                         },
                                     };
                                 } else if (
@@ -145,9 +143,7 @@ function createEdgeTypes({
                                         kind: "NamedType",
                                         name: {
                                             kind: "Name",
-                                            value: `${pluralize.plural(
-                                                edge.fieldType,
-                                            )}Connection`,
+                                            value: `${edge.edgeName}Connection`,
                                         },
                                     };
                                 }

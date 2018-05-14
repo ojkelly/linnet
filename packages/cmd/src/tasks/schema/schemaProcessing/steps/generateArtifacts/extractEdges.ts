@@ -169,6 +169,7 @@ function validateEdges({ edges }: { edges: Edge[] }): Edge[] {
                     updatedEdge.counterpart = {
                         type: compareEdge.typeName,
                         field: compareEdge.field,
+                        cardinality: compareEdge.cardinality,
                     };
                 }
             }
@@ -223,6 +224,7 @@ type Edge = {
     counterpart?: {
         type: string;
         field: string;
+        cardinality: EdgeCardinality | string;
     };
 };
 

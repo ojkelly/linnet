@@ -21,7 +21,11 @@ import {
     DataSourceTemplates,
 } from "../dataSources/dataSources";
 import * as pluralize from "pluralize";
-import { Edge } from "../schemaProcessing/steps/generateArtifacts/extractEdges";
+import {
+    Edge,
+    EdgeCardinality,
+} from "../schemaProcessing/steps/generateArtifacts/extractEdges";
+import { generateDynamoDBDataSourceTemplate } from "../../schema/dataSources/dynamoDB";
 
 import { Config } from "../../common/types";
 import { generateDynamoDBResolverTemplate } from "./dynamoDB";
@@ -56,69 +60,46 @@ function generateResolverMappingTemplates({
     }
     const queryTypeMap = queryType.getFields();
 
+    const dataSourceDynamo = generateDynamoDBDataSourceTemplate({
+        config,
+    });
     // [ Query Resolvers ]--------------------------------------------------------------------------
 
     Object.keys(queryTypeMap).forEach(field => {
         // Search for this node in our dataSources
         if (newTypeDataSourceMap.query[field]) {
-            // Load the dataSource
-            const dataSource: DataSourceTemplate =
-                dataSourceTemplates[newTypeDataSourceMap.query[field].name];
-
-            switch (dataSource.type) {
-                case DataSource.DynamoDB:
-                    if (
-                        newTypeDataSourceMap.query[field].resolverType ===
-                        "connection"
-                    ) {
-                        resolverTemplates[
-                            field
-                        ] = generateDynamoDBResolverTemplate({
-                            dataSource,
-                            typeName: field,
-                            fieldName: "edge",
-                            fieldType: queryTypeMap[field],
-                            resolverType: "connection",
-                            namedType: newTypeDataSourceMap.query[field].name,
-                            edges,
-                        });
-                    } else if (
-                        newTypeDataSourceMap.query[field].resolverType ===
-                        "connectionPlural"
-                    ) {
-                        resolverTemplates[
-                            field
-                        ] = generateDynamoDBResolverTemplate({
-                            dataSource,
-                            typeName: field,
-                            fieldName: "edges",
-                            fieldType: queryTypeMap[field],
-                            resolverType: "connectionPlural",
-                            namedType: newTypeDataSourceMap.query[field].name,
-                            edges,
-                        });
-                    } else {
-                        resolverTemplates[
-                            field
-                        ] = generateDynamoDBResolverTemplate({
-                            dataSource,
-                            typeName: "Query",
-                            fieldName: field,
-                            fieldType: queryTypeMap[field],
-                            resolverType:
-                                newTypeDataSourceMap.query[field].resolverType,
-                            namedType: newTypeDataSourceMap.query[field].name,
-                            edges,
-                        });
-                    }
-                    break;
-                case DataSource.ElasticSearch:
-                    break;
-                case DataSource.Lambda:
-                    break;
-                case DataSource.None:
-                    break;
-            }
+            // if (
+            //     newTypeDataSourceMap.query[field].resolverType === "connection"
+            // ) {
+            //     const edge: Edge = newTypeDataSourceMap.query[field].edge;
+            //     let fieldName = "";
+            //     console.dir(newTypeDataSourceMap.query[field].edge);
+            //     if (edge.cardinality === EdgeCardinality.MANY) {
+            //         fieldName = "edges";
+            //     } else if (edge.cardinality === EdgeCardinality.ONE) {
+            //         fieldName = "edge";
+            //     }
+            //     resolverTemplates[field] = generateDynamoDBResolverTemplate({
+            //         dataSource: dataSourceDynamo,
+            //         typeName: `${edge.edgeName}Connection`,
+            //         fieldName,
+            //         fieldType: queryTypeMap[edge.fieldType],
+            //         resolverType:
+            //             newTypeDataSourceMap.query[field].resolverType,
+            //         namedType: newTypeDataSourceMap.query[field].name,
+            //         edges: [edge],
+            //     });
+            // } else {
+            resolverTemplates[field] = generateDynamoDBResolverTemplate({
+                dataSource: dataSourceDynamo,
+                typeName: "Query",
+                fieldName: field,
+                fieldType: queryTypeMap[field],
+                resolverType: newTypeDataSourceMap.query[field].resolverType,
+                namedType: newTypeDataSourceMap.query[field].name,
+                edges,
+            });
+            // }
         }
     });
 

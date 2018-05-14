@@ -371,46 +371,49 @@ function getRootNode({
         for (const edgeIndex in edgeTypes) {
             const edge: Edge = edgeTypes[edgeIndex];
             if (edge.typeName === rootNode["linnet:namedType"]) {
-                rootNode[edge.field] = items.filter(item => {
-                    if (
-                        item["linnet:dataType"].startsWith(`${edge.edgeName}::`)
-                    ) {
-                        if (edge.principal === EdgePrinciple.TRUE) {
-                            if (item.id === rootNode.id) {
-                                if (edge.cardinality === "ONE") {
-                                    edgeFields[edge.field] = {
-                                        edge: item["linnet:edge"],
-                                    };
-                                } else if (edge.cardinality === "MANY") {
-                                    if (
-                                        typeof rootNode[edge.field] ==
-                                        "undefined"
-                                    ) {
-                                        edgeFields[edge.field] = { edges: [] };
-                                    }
-                                    edgeFields[edge.field].edges.push(item.id);
-                                }
-                            }
-                        } else if (edge.principal === EdgePrinciple.FALSE) {
-                            if (item["linnet:edge"] === rootNode.id) {
-                                rootNode[edge.field] = item.id;
-                                if (edge.cardinality === "ONE") {
-                                    edgeFields[edge.field] = {
-                                        edge: item["linnet:edge"],
-                                    };
-                                } else if (edge.cardinality === "MANY") {
-                                    if (
-                                        typeof rootNode[edge.field] ==
-                                        "undefined"
-                                    ) {
-                                        edgeFields[edge.field] = { edges: [] };
-                                    }
-                                    edgeFields[edge.field].edges.push(item.id);
-                                }
-                            }
-                        }
-                    }
-                });
+                rootNode[edge.field] = {
+                    parentId: rootNode.id,
+                };
+                // rootNode[edge.field] = items.filter(item => {
+                //     if (
+                //         item["linnet:dataType"].startsWith(`${edge.edgeName}::`)
+                //     ) {
+                //         // if (edge.principal === EdgePrinciple.TRUE) {
+                //         //     if (item.id === rootNode.id) {
+                //         //         if (edge.cardinality === "ONE") {
+                //         //             edgeFields[edge.field] = {
+                //         //                 edge: item["linnet:edge"],
+                //         //             };
+                //         //         } else if (edge.cardinality === "MANY") {
+                //         //             if (
+                //         //                 typeof rootNode[edge.field] ==
+                //         //                 "undefined"
+                //         //             ) {
+                //         //                 edgeFields[edge.field] = { edges: [] };
+                //         //             }
+                //         //             edgeFields[edge.field].edges.push(item.id);
+                //         //         }
+                //         //     }
+                //         // } else if (edge.principal === EdgePrinciple.FALSE) {
+                //         //     if (item["linnet:edge"] === rootNode.id) {
+                //         //         rootNode[edge.field] = item.id;
+                //         //         if (edge.cardinality === "ONE") {
+                //         //             edgeFields[edge.field] = {
+                //         //                 edge: item["linnet:edge"],
+                //         //             };
+                //         //         } else if (edge.cardinality === "MANY") {
+                //         //             if (
+                //         //                 typeof rootNode[edge.field] ==
+                //         //                 "undefined"
+                //         //             ) {
+                //         //                 edgeFields[edge.field] = { edges: [] };
+                //         //             }
+                //         //             edgeFields[edge.field].edges.push(item.id);
+                //         //         }
+                //         //     }
+                //         // }
+                //     }
+                // });
             }
         }
         const cleanedRootNode = {};

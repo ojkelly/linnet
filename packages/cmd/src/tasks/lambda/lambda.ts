@@ -91,7 +91,6 @@ async function upsertLambda({
             const updateFunctionCode: AWS.Lambda.Types.FunctionConfiguration = await lambda
                 .updateFunctionCode(updateFunctionCodeParams)
                 .promise();
-            console.dir({ updateFunctionCode });
 
             const updateAliasParams: AWS.Lambda.UpdateAliasRequest = {
                 FunctionName: updateFunctionCode.FunctionName,
@@ -101,7 +100,6 @@ async function upsertLambda({
             const updateAlias: AWS.Lambda.Types.AliasConfiguration = await lambda
                 .updateAlias(updateAliasParams)
                 .promise();
-            console.dir({ updateAlias });
         }
     } catch (error) {
         if (error.code === "ResourceInUseException") {

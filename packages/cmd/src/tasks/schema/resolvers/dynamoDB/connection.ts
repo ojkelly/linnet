@@ -37,34 +37,46 @@ function generateRequestTemplate({
     const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
 
     let edge = edges[0];
+    let index = "";
 
+    // If this edge is not the principle, we need to query the other way around using
+    // the GSI
+    if (edge.principal === EdgePrinciple.FALSE) {
+        index = `"index":"edge-dataType",`;
+    }
     return `${headerString}
 
-#set($isPrinciple = "${edge.principal}")
-#if($isPrinciple == "${EdgePrinciple.TRUE}")
-  #set($keyName = 'id')
-#elseif($isPrinciple == "${EdgePrinciple.FALSE}")
-  #set($keyName = 'edge')
-#end
+    #set($isPrinciple = "${edge.principal}")
+    #if($isPrinciple == "${EdgePrinciple.TRUE}")
+      #set($partitionKeyName = 'id')
+    #elseif($isPrinciple == "${EdgePrinciple.FALSE}")
+      #set($partitionKeyName = 'linnet:edge')
+    #end
 
-#set($ids = [])
-#foreach($item in $ctx.source.edge)
-  #set($map = {})
-  $util.qr($map.put("id", $util.dynamodb.toString($item)))
-  $util.qr($map.put("linnet:dataType", $util.dynamodb.toString("Node")))
-  $util.qr($ids.add($map))
-#end
-{
-  "version" : "2018-05-29",
-  "operation" : "BatchGetItem",
-  "tables" : {
-    "${dataSourceConfig.tableName}": {
-          "keys": $util.toJson($ids),
-          "consistentRead": true
-      }
-  }
-}
-`;
+    #if($context.arguments.where.id)
+      #set($partitionKey = $context.arguments.where.id)
+    #else
+      #set($partitionKey = $context.source.id)
+    #end
+    {
+      "version" : "2017-02-28",
+      "operation" : "Query",
+      ${index}
+      "query": {
+        "expression" : "#partitionKeyName = :partitionKeyValue AND begins_with(#sortKeyName, :sortKeyValue)",
+          "expressionNames" : {
+                "#partitionKeyName" : "$partitionKeyName",
+                "#sortKeyName" : "linnet:dataType"
+            },
+          "expressionValues": {
+            ":partitionKeyValue": {"S": "$partitionKey"},
+            ":sortKeyValue": {"S": "${edge.edgeName}"}
+        }
+      },
+      "limit": $util.defaultIfNull($context.arguments.limit, 1),
+      "nextToken": $util.toJson($util.defaultIfNullOrBlank($context.arguments.nextToken, null))
+    }
+    `;
 }
 
 function generateResponseTemplate({

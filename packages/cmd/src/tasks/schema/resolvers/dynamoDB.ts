@@ -34,7 +34,6 @@ import * as deleteManyGenerator from "./dynamoDB/delete";
 import * as edgeGenerator from "./dynamoDB/edge";
 import * as pluralGenerator from "./dynamoDB/plural";
 import * as connectionGenerator from "./dynamoDB/connection";
-import * as connectionPluralGenerator from "./dynamoDB/connectionPlural";
 import * as queryGenerator from "./dynamoDB/query";
 import * as updateGenerator from "./dynamoDB/update";
 import * as updateManyGenerator from "./dynamoDB/updateMany";
@@ -169,16 +168,7 @@ function generateRequestTemplate({
                 edges,
                 headerString,
             });
-        case "connectionPlural":
-            return connectionPluralGenerator.generateRequestTemplate({
-                fieldName,
-                fieldType,
-                namedType,
-                dataSource,
-                resolverType,
-                edges,
-                headerString,
-            });
+
         case "plural":
             return pluralGenerator.generateRequestTemplate({
                 fieldName,
@@ -317,16 +307,6 @@ function generateResponseTemplate({
                 resolverType,
                 edges,
                 headerString: header,
-            });
-        case "connectionPlural":
-            return connectionPluralGenerator.generateResponseTemplate({
-                fieldName,
-                fieldType,
-                namedType,
-                dataSource,
-                resolverType,
-                edges,
-                headerString,
             });
         case "plural":
             return pluralGenerator.generateResponseTemplate({
