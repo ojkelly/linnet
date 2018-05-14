@@ -145,10 +145,10 @@ function createTypes({
         name: `${node.name.value}Connection`,
         resolverType: "connection",
     };
-    newTypeFields.query[`${node.name.value}Connection`] = {
-        name: `${node.name.value}}Connection`,
+    newTypeFields.query[`${pluralize.plural(node.name.value)}Connection`] = {
+        name: `${pluralize.plural(node.name.value)}Connection`,
         type: new GraphQLObjectType({
-            name: `${node.name.value}Connection`,
+            name: `${pluralize.plural(node.name.value)}Connection`,
             fields: () => ({
                 edges: { type: new GraphQLList(type as GraphQLObjectType) },
             }),
@@ -163,8 +163,10 @@ function createTypes({
             },
         },
     };
-    newTypeDataSourceMap.query[`${node.name.value}Connection`] = {
-        name: `${node.name.value}Connection`,
+    newTypeDataSourceMap.query[
+        `${pluralize.plural(node.name.value)}Connection`
+    ] = {
+        name: `${pluralize.plural(node.name.value)}Connection`,
         resolverType: "connection",
     };
     // const edgesOnType = edges.forEach(edge => {

@@ -373,6 +373,7 @@ function getRootNode({
             if (edge.typeName === rootNode["linnet:namedType"]) {
                 rootNode[edge.field] = {
                     parentId: rootNode.id,
+                    edgeName: edge.edgeName,
                 };
                 // rootNode[edge.field] = items.filter(item => {
                 //     if (

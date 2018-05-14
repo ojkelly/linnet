@@ -60,7 +60,7 @@ function generateRequestTemplate({
 
     #if($context.arguments.source.parentId)
       #set($partitionKey = $context.source.parentId)
-      #set($sortKeyValue = $context.arguments.source.edgeName)
+      #set($sortKeyValue = context.arguments.source.edgeName)
 
     #end
     {
