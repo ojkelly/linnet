@@ -37,6 +37,7 @@ function generateRequestTemplate({
     const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
 
     return `${headerString}
+## ResolverType: ${resolverType}
 
 #set($keys = [])
 #foreach($id in $ctx.arguments.where.ids)
@@ -78,6 +79,7 @@ function generateResponseTemplate({
     const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
 
     return `${headerString}
+## ResolverType: ${resolverType}
 
 $util.toJson($ctx.result.data["${dataSourceConfig.tableName}"]),
 `;

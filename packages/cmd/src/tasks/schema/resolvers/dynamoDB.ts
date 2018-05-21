@@ -32,6 +32,7 @@ import * as createGenerator from "./dynamoDB/create";
 import * as deleteGenerator from "./dynamoDB/delete";
 import * as deleteManyGenerator from "./dynamoDB/delete";
 import * as edgeGenerator from "./dynamoDB/edge";
+import * as edgesGenerator from "./dynamoDB/edges";
 import * as pluralGenerator from "./dynamoDB/plural";
 import * as connectionGenerator from "./dynamoDB/connection";
 import * as connectionPluralGenerator from "./dynamoDB/connectionPlural";
@@ -190,6 +191,7 @@ function generateRequestTemplate({
                 edges,
                 headerString,
             });
+
         // [ Mutation ]-----------------------------------------------------------------------------
         // case "create":
         //     return createGenerator.generateRequestTemplate({
@@ -254,6 +256,16 @@ function generateRequestTemplate({
         // [ Other ]--------------------------------------------------------------------------------
         case "edge":
             return edgeGenerator.generateRequestTemplate({
+                fieldName,
+                fieldType,
+                namedType,
+                dataSource,
+                resolverType,
+                edges,
+                headerString,
+            });
+        case "edges":
+            return edgesGenerator.generateRequestTemplate({
                 fieldName,
                 fieldType,
                 namedType,
@@ -403,6 +415,16 @@ function generateResponseTemplate({
         // [ Other ]--------------------------------------------------------------------------------
         case "edge":
             return edgeGenerator.generateResponseTemplate({
+                fieldName,
+                fieldType,
+                namedType,
+                dataSource,
+                resolverType,
+                edges,
+                headerString: header,
+            });
+        case "edges":
+            return edgesGenerator.generateResponseTemplate({
                 fieldName,
                 fieldType,
                 namedType,

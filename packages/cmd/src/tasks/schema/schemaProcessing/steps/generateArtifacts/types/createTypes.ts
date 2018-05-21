@@ -179,74 +179,27 @@ function createTypes({
         resolverType: "connectionPlural",
     };
 
-    const edgesOnType = edges.forEach(edge => {
-        if (edge.typeName === node.name.value) {
-            if (edge.cardinality === EdgeCardinality.MANY) {
-                newTypeDataSourceMap.query[
-                    `${pluralize.plural(node.name.value)}Connection`
-                ] = {
-                    typeName: node.name.value,
-                    name: `${pluralize.plural(node.name.value)}Connection`,
-                    field: edge.field,
-                    resolverType: "connectionPlural",
-                };
-            } else if (edge.cardinality === EdgeCardinality.ONE) {
-                newTypeDataSourceMap.query[`${node.name.value}Connection`] = {
-                    typeName: node.name.value,
-                    name: `${node.name.value}Connection`,
-                    field: edge.field,
-                    resolverType: "connection",
-                };
-            }
-
-            // console.log(`${edge.edgeName}Connection`);
-            // let args = {};
-            // if (edge.cardinality === EdgeCardinality.MANY) {
-            //     args = {
-            //         where: {
-            //             type: new GraphQLNonNull(
-            //                 newInputTypes[`${edge.fieldType}Where`],
-            //             ),
-            //         },
-            //         nextToken: { type: GraphQLString },
-            //         limit: { type: GraphQLInt },
-            //     };
-            // } else if (edge.cardinality === EdgeCardinality.ONE) {
-            //     args = {
-            //         where: {
-            //             type: new GraphQLNonNull(
-            //                 newInputTypes[`${edge.fieldType}WhereUnique`],
-            //             ),
-            //         },
-            //     };
-            // }
-
-            // newTypeFields.query[`${edge.edgeName}Connection`] = {
-            //     name: `${edge.edgeName}}Connection`,
-            //     type: new GraphQLObjectType({
-            //         name: `${edge.edgeName}Connection`,
-            //         fields: () => {
-            //             if (edge.cardinality === EdgeCardinality.MANY) {
-            //                 return {
-            //                     edges: { type: type as GraphQLObjectType },
-            //                     nextToken: { type: GraphQLString },
-            //                 };
-            //             } else if (edge.cardinality === EdgeCardinality.ONE) {
-            //                 return {
-            //                     edge: { type: type as GraphQLObjectType },
-            //                 };
-            //             }
-            //         },
-            //     }),
-            //     args,
-            // };
-            // newTypeDataSourceMap.query[`${edge.edgeName}Connection`] = {
-            //     name: edge.edgeName,
-            //     edge,
-            //     resolverType: "connection",
-            // };
-        }
-    });
+    // const edgesOnType = edges.forEach(edge => {
+    //     if (edge.typeName === node.name.value) {
+    //         if (edge.cardinality === EdgeCardinality.MANY) {
+    //             newTypeDataSourceMap.query[
+    //                 `${pluralize.plural(edge.fieldType)}Connection`
+    //             ] = {
+    //                 typeName: node.name.value,
+    //                 name: `${pluralize.plural(edge.fieldType)}Connection`,
+    //                 field: edge.field,
+    //                 resolverType: "connectionPlural",
+    //             };
+    //         } else if (edge.cardinality === EdgeCardinality.ONE) {
+    //             newTypeDataSourceMap.query[`${edge.fieldType}Connection`] = {
+    //                 typeName: node.name.value,
+    //                 name: `${edge.fieldType}Connection`,
+    //                 field: edge.field,
+    //                 resolverType: "connection",
+    //             };
+    //         }
+    //     }
+    // });
 
     // [ create ]-----------------------------------------------------------------------------------
     newTypeFields.mutation[`create${node.name.value}`] = {

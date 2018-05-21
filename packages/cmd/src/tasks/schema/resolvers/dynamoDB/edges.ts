@@ -34,31 +34,29 @@ function generateRequestTemplate({
     edges: Edge[];
     headerString: string;
 }): string | any {
+    const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
+
     return `${headerString}
 ## ResolverType: ${resolverType}
 
-#if($context.arguments.where.id)
-  #set($partitionKeyValue = $context.arguments.where.id)
-#elseif($context.source.id)
-  #set($partitionKeyValue = $context.source.id)
+#set($keys = [])
+#foreach($id in $ctx.source.edges)
+  #set($map = {})
+  $util.qr($map.put("id", $util.dynamodb.toString($id)))
+  $util.qr($map.put("linnet:dataType", $util.dynamodb.toString("Node")))
+  $util.qr($keys.add($map))
 #end
-
 {
-  "version" : "2017-02-28",
-  "operation" : "Query",
-  "query": {
-    "expression" : "#partitionKeyName = :partitionKeyValue AND #sortKeyName = :sortKeyValue",
-      "expressionNames" : {
-            "#partitionKeyName" : "id",
-            "#sortKeyName" : "linnet:dataType"
-        },
-      "expressionValues": {
-        ":partitionKeyValue": {"S": "$partitionKeyValue"},
-        ":sortKeyValue": {"S": "Node"}
-    }
-  },
-  "limit": 1,
-}`;
+  "version" : "2018-05-29",
+  "operation" : "BatchGetItem",
+  "tables" : {
+    "${dataSourceConfig.tableName}": {
+          "keys": $util.toJson($keys),
+          "consistentRead": true
+      }
+  }
+}
+`;
 }
 
 function generateResponseTemplate({
@@ -78,16 +76,13 @@ function generateResponseTemplate({
     edges: Edge[];
     headerString: string;
 }): string | any {
+    const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
+
     return `${headerString}
 ## ResolverType: ${resolverType}
 
-#if($ctx.result.items[0])
-  #set($return = $util.map.copyAndRemoveAllKeys($ctx.result.items[0], $linnetFields))
-  $util.toJson($return)
-#else
-  ## TODO: Handle null
-  $util.toJson($ctx.result.items)
-#end`;
+$util.toJson($ctx.result.data["${dataSourceConfig.tableName}"])
+`;
 }
 
 export { generateRequestTemplate, generateResponseTemplate };

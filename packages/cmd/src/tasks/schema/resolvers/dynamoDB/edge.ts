@@ -44,36 +44,23 @@ function generateRequestTemplate({
         index = `"index":"edge-dataType",`;
     }
     return `${headerString}
+## ResolverType: ${resolverType}
 
-#set($isPrinciple = "${edge.principal}")
-#if($isPrinciple == "${EdgePrinciple.TRUE}")
-  #set($partitionKeyName = 'id')
-#elseif($isPrinciple == "${EdgePrinciple.FALSE}")
-  #set($partitionKeyName = 'linnet:edge')
-#end
-
-#if($context.arguments.where.id)
-  #set($partitionKey = $context.arguments.where.id)
-#else
-  #set($partitionKey = $context.source.id)
-#end
 {
   "version" : "2017-02-28",
   "operation" : "Query",
-  ${index}
   "query": {
-    "expression" : "#partitionKeyName = :partitionKeyValue AND begins_with(#sortKeyName, :sortKeyValue)",
+    "expression" : "#partitionKeyName = :partitionKeyValue AND #sortKeyName = :sortKeyValue",
       "expressionNames" : {
-            "#partitionKeyName" : "$partitionKeyName",
+            "#partitionKeyName" : "id",
             "#sortKeyName" : "linnet:dataType"
         },
       "expressionValues": {
-        ":partitionKeyValue": {"S": "$partitionKey"},
-        ":sortKeyValue": {"S": "${edge.edgeName}"}
+        ":partitionKeyValue": {"S": "$ctx.source.edge"},
+        ":sortKeyValue": {"S": "Node"}
     }
   },
-  "limit": $util.defaultIfNull($context.arguments.limit, 1),
-  "nextToken": $util.toJson($util.defaultIfNullOrBlank($context.arguments.nextToken, null))
+  "limit": 1,
 }
 `;
 }
@@ -106,21 +93,15 @@ function generateResponseTemplate({
     //   $util.toJson($result[0])
     // #end
     return `${headerString}
+## ResolverType: ${resolverType}
 
-#set($isPrinciple = "${edge.principal}")
-#set($return = [])
-#foreach($item in $ctx.result.items)
-  #if($isPrinciple == "${EdgePrinciple.TRUE}")
-    $util.qr($return.add({
-    'id': $item["linnet:edge"]
-    }))
-  #elseif($isPrinciple == "${EdgePrinciple.FALSE}")
-    $util.qr($return.add({
-      'id': $item.id
-    }))
-  #end
+#if($ctx.result.items[0])
+  #set($return = $util.map.copyAndRemoveAllKeys($ctx.result.items[0], $linnetFields))
+  $util.toJson($return)
+#else
+  ## TODO: Handle null
+  $util.toJson($ctx.result.items)
 #end
-$util.toJson($return)
 `;
 }
 
