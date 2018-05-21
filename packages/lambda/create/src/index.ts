@@ -9,6 +9,7 @@ import {
 import * as AWS from "aws-sdk";
 import * as AWSXRay from "aws-xray-sdk-core";
 import * as uuid from "uuid";
+import * as chunk from "lodash.chunk";
 
 import {
     HandlerEvent,
@@ -160,21 +161,30 @@ async function generateCreate({
             }),
         );
 
-        const batchWriteParams: AWS.DynamoDB.BatchWriteItemInput = {
-            RequestItems: {
-                [dataSource.tableName]: items.map(item => ({
-                    PutRequest: {
-                        Item: AWS.DynamoDB.Converter.marshall(item),
+        // Chunk the items array into the max size allowed by the dynamo api 25
+        const batchItems = chunk(items, 25);
+        // Do a batch update on all items in chunks
+        const batchWriteResults = await Promise.all(
+            batchItems.map(async batch => {
+                const batchWriteParams: AWS.DynamoDB.BatchWriteItemInput = {
+                    RequestItems: {
+                        [dataSource.tableName]: batch.map(item => ({
+                            PutRequest: {
+                                Item: AWS.DynamoDB.Converter.marshall(item),
+                            },
+                        })),
                     },
-                })),
-            },
-        };
+                };
 
-        const batchWriteItem = await dynamoDB
-            .batchWriteItem(batchWriteParams)
-            .promise();
-
+                const batchWriteItem = await dynamoDB
+                    .batchWriteItem(batchWriteParams)
+                    .promise();
+            }),
+        );
+        console.log(JSON.stringify(batchWriteResults));
+        // TODO: check for failures, and retry up to 3 times
         subsegment.close();
+        // Return the root node to the resolve
         return getRootNode({
             segment: subsegment,
             rootNodeId,
@@ -292,21 +302,19 @@ function generateWriteItem({
                                 let edgeNodeId: string;
 
                                 if (edge.principal === EdgePrinciple.TRUE) {
-                                    edgeDataType = `${
-                                        edge.edgeName
-                                    }::${nodeId}`;
                                     edgeNamedType = edge.fieldType;
                                     edgeNodeId = nestedItem.id;
                                 } else {
-                                    edgeDataType = `${edge.edgeName}::${
-                                        nestedItem.id
-                                    }`;
                                     edgeNamedType = edge.fieldType;
                                     edgeNodeId = nodeId;
                                 }
                                 const itemEdge = {
                                     id: nodeId,
-                                    "linnet:dataType": edgeDataType,
+                                    // dataType is a sort key, that exists to create
+                                    // a unique record
+                                    "linnet:dataType": `${edge.edgeName}::${
+                                        nestedItem.id
+                                    }`,
                                     "linnet:namedType": edgeNamedType,
                                     "linnet:edge": edgeNodeId,
                                 };

@@ -14,6 +14,7 @@
         "aws-xray-sdk-core": "^1.2.0",
         "continuation-local-storage": "^3.2.1",
         "linnet": "^0.4.0",
+        "lodash.chunk": "^4.2.0",
         "uuid": "^3.2.1"
     },
     "devDependencies": {
