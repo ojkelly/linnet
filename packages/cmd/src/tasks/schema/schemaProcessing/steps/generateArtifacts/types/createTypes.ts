@@ -158,6 +158,7 @@ function createTypes({
             name: `${pluralize.plural(node.name.value)}Connection`,
             fields: () => ({
                 edges: { type: new GraphQLList(type as GraphQLObjectType) },
+                nextToken: { type: GraphQLString },
             }),
         }),
         args: {

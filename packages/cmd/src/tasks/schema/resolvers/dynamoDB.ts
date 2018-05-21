@@ -69,6 +69,8 @@ function generateDynamoDBResolverTemplate({
 ## Version: ${pkg.version}
 ## ${date.toISOString()}
 
+## Uncomment for debugging $util.error($util.toJson$($ctx))
+
 ## This is an array of all the linnet system fields
 #set($linnetFields = ["linnet:dataType","linnet:edge","linnet:namedType"])
 `;

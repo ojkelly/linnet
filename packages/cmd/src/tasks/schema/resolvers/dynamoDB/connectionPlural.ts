@@ -58,13 +58,12 @@ function generateRequestTemplate({
 
 ${partitionKeyName}
 
-#if($context.arguments.where.id)
-  #set($partitionKey = $context.arguments.where.id)
-#end
-
 #if($context.source['${fieldName}'].parentId)
   #set($partitionKey = $context.source['${fieldName}'].parentId)
-  #set($sortKeyValue = $context.arguments.source.edgeName)
+#elseif($context.source.id)
+ #set($partitionKey = $context.source.id)
+#elseif($context.arguments.where.id)
+  #set($partitionKey = $context.arguments.where.id)
 #end
 
 {

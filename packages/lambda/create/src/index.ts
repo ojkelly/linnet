@@ -135,6 +135,7 @@ async function generateCreate({
         const createdBy = "linnet";
 
         // Create all the items
+        // TODO: this cant handle multiple items in a nested create
         const items = generateWriteItem({
             segment,
             linnetFields,
@@ -148,6 +149,7 @@ async function generateCreate({
         });
 
         console.log("items length:", items.length);
+        console.log(JSON.stringify(items));
 
         // TODO: if there is more than 25 items, you need to split into
         // multiple batches
@@ -249,6 +251,9 @@ function generateWriteItem({
                     id: nodeId,
                     "linnet:dataType": "Node",
                     "linnet:namedType": namedType,
+                    createdAt,
+                    updatedAt,
+                    createdBy,
                 };
 
                 // Add all Create fields to the Node, and extract all the edges
@@ -318,7 +323,7 @@ function generateWriteItem({
         }
 
         if (createInput.connections) {
-            // TODO: add connections
+            // TODO: add connections (create a connection from the id, but dont create a node)
             // Create any Connections
             //   Object.keys(createInput.create).forEach(fieldName => {
             //     const edge = edgesOnThisType.find(
