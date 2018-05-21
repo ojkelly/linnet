@@ -4,5 +4,6 @@
         "**/.DS_Store": true,
         "jspm_packages": true,
         "node_modules": true
-    }
+    },
+    "todo-tree.flat": false
 }

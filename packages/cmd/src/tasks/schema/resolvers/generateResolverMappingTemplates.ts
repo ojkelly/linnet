@@ -65,41 +65,19 @@ function generateResolverMappingTemplates({
     });
     // [ Query Resolvers ]--------------------------------------------------------------------------
 
-    Object.keys(queryTypeMap).forEach(field => {
+    Object.keys(queryTypeMap).forEach(i => {
+        console.log(newTypeDataSourceMap.query[i]);
         // Search for this node in our dataSources
-        if (newTypeDataSourceMap.query[field]) {
-            // if (
-            //     newTypeDataSourceMap.query[field].resolverType === "connection"
-            // ) {
-            //     const edge: Edge = newTypeDataSourceMap.query[field].edge;
-            //     let fieldName = "";
-            //     console.dir(newTypeDataSourceMap.query[field].edge);
-            //     if (edge.cardinality === EdgeCardinality.MANY) {
-            //         fieldName = "edges";
-            //     } else if (edge.cardinality === EdgeCardinality.ONE) {
-            //         fieldName = "edge";
-            //     }
-            //     resolverTemplates[field] = generateDynamoDBResolverTemplate({
-            //         dataSource: dataSourceDynamo,
-            //         typeName: `${edge.edgeName}Connection`,
-            //         fieldName,
-            //         fieldType: queryTypeMap[edge.fieldType],
-            //         resolverType:
-            //             newTypeDataSourceMap.query[field].resolverType,
-            //         namedType: newTypeDataSourceMap.query[field].name,
-            //         edges: [edge],
-            //     });
-            // } else {
-            resolverTemplates[field] = generateDynamoDBResolverTemplate({
+        if (newTypeDataSourceMap.query[i]) {
+            resolverTemplates[i] = generateDynamoDBResolverTemplate({
                 dataSource: dataSourceDynamo,
-                typeName: "Query",
-                fieldName: field,
-                fieldType: queryTypeMap[field],
-                resolverType: newTypeDataSourceMap.query[field].resolverType,
-                namedType: newTypeDataSourceMap.query[field].name,
+                typeName: newTypeDataSourceMap.query[i].typeName,
+                fieldName: newTypeDataSourceMap.query[i].field,
+                fieldType: queryTypeMap[i],
+                resolverType: newTypeDataSourceMap.query[i].resolverType,
+                namedType: newTypeDataSourceMap.query[i].name,
                 edges,
             });
-            // }
         }
     });
 

@@ -38,21 +38,22 @@ function generateRequestTemplate({
 
     let edge = edges[0];
     let index = "";
+    let partitionKeyName = "";
 
+    if (edge.principal === EdgePrinciple.TRUE) {
+        partitionKeyName = `#set($partitionKeyName = 'id')`;
+    }
     // If this edge is not the principle, we need to query the other way around using
     // the GSI
     if (edge.principal === EdgePrinciple.FALSE) {
         index = `"index":"edge-dataType",`;
+        partitionKeyName = `#set($partitionKeyName = 'linnet:edge')`;
     }
+
     return `${headerString}
     #set($sortKeyValue = '')
 
-    #set($isPrinciple = "${edge.principal}")
-    #if($isPrinciple == "${EdgePrinciple.TRUE}")
-      #set($partitionKeyName = 'id')
-    #elseif($isPrinciple == "${EdgePrinciple.FALSE}")
-      #set($partitionKeyName = 'linnet:edge')
-    #end
+    ${partitionKeyName}
 
     #if($context.arguments.where.id)
       #set($partitionKey = $context.arguments.where.id)
@@ -61,8 +62,8 @@ function generateRequestTemplate({
     #if($context.arguments.source.parentId)
       #set($partitionKey = $context.source.parentId)
       #set($sortKeyValue = context.arguments.source.edgeName)
-
     #end
+
     {
       "version" : "2017-02-28",
       "operation" : "Query",
@@ -78,7 +79,7 @@ function generateRequestTemplate({
             ":sortKeyValue": {"S": "$sortKeyValue"}
         }
       },
-      "limit": $util.defaultIfNull($context.arguments.limit, 1),
+      "limit": $util.defaultIfNull($context.arguments.limit, 10),
       "nextToken": $util.toJson($util.defaultIfNullOrBlank($context.arguments.nextToken, null))
     }
     `;
@@ -101,16 +102,32 @@ function generateResponseTemplate({
     edges: Edge[];
     headerString: string;
 }): string | any {
-    const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
+    let edge = edges[0];
+    let field = "";
+
+    if (edge.principal === EdgePrinciple.TRUE) {
+        field = `id`;
+    }
+    // If this edge is not the principle, we need get the edge value
+    if (edge.principal === EdgePrinciple.FALSE) {
+        field = `linnet:edge`;
+    }
 
     return `${headerString}
-$util.toJson($ctx.result.data["${dataSourceConfig.tableName}"]),
-`;
+
+#set($results = [])
+#foreach($item in $ctx.result.items)
+  #if($item['${field}'])
+      $util.qr($results.add($item['${field}']))
+  #end
+#end
+
+{
+  "edges": $util.toJson($results),
+  "nextToken": $util.toJson($context.result.nextToken)
 }
 
-// {
-//   "edges": $util.toJson($context.result.items),
-//   "nextToken": $util.toJson($context.result.nextToken)
-//   }
+`;
+}
 
 export { generateRequestTemplate, generateResponseTemplate };
