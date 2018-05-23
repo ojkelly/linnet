@@ -121,11 +121,11 @@ function generateResponseTemplate({
     let edge = edges[0];
     let edgeField = "";
 
-    if (edge.principal === EdgePrinciple.FALSE) {
+    if (edge.principal === EdgePrinciple.TRUE) {
         edgeField = `linnet:edge`;
     }
 
-    if (edge.principal === EdgePrinciple.TRUE) {
+    if (edge.principal === EdgePrinciple.FALSE) {
         edgeField = `id`;
     }
 
