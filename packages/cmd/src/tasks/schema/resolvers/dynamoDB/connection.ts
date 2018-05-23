@@ -122,11 +122,11 @@ function generateResponseTemplate({
     let edgeField = "";
 
     if (edge.principal === EdgePrinciple.FALSE) {
-        edgeField = `id`;
+        edgeField = `linnet:edge`;
     }
     // If this edge is not the principle, we need get the edge value
     if (edge.principal === EdgePrinciple.TRUE) {
-        edgeField = `linnet:edge`;
+        edgeField = `id`;
     }
 
     return `${headerString}
