@@ -176,13 +176,11 @@ async function generateCreate({
                     },
                 };
 
-                const batchWriteItem = await dynamoDB
-                    .batchWriteItem(batchWriteParams)
-                    .promise();
+                // TODO: check for failures, and retry up to 3 times
+                return dynamoDB.batchWriteItem(batchWriteParams).promise();
             }),
         );
         console.log(JSON.stringify(batchWriteResults));
-        // TODO: check for failures, and retry up to 3 times
         subsegment.close();
         // Return the root node to the resolve
         return getRootNode({
@@ -297,27 +295,35 @@ function generateWriteItem({
                                 nestedItem["linnet:namedType"] ===
                                     edge.fieldType
                             ) {
+                                let itemEdge: any = {};
                                 let edgeDataType: string;
                                 let edgeNamedType: string;
                                 let edgeNodeId: string;
 
                                 if (edge.principal === EdgePrinciple.TRUE) {
-                                    edgeNamedType = edge.fieldType;
-                                    edgeNodeId = nestedItem.id;
+                                    itemEdge = {
+                                        id: nodeId,
+                                        // dataType is a sort key, that exists to create
+                                        // a unique record
+                                        "linnet:dataType": `${edge.edgeName}::${
+                                            nestedItem.id
+                                        }`,
+                                        "linnet:namedType": edge.fieldType,
+                                        "linnet:edge": nestedItem.id,
+                                    };
                                 } else {
-                                    edgeNamedType = edge.fieldType;
-                                    edgeNodeId = nodeId;
+                                    itemEdge = {
+                                        id: nestedItem.id,
+                                        // dataType is a sort key, that exists to create
+                                        // a unique record
+                                        "linnet:dataType": `${
+                                            edge.edgeName
+                                        }::${nodeId}`,
+                                        "linnet:namedType":
+                                            edge.counterpart.type,
+                                        "linnet:edge": nodeId,
+                                    };
                                 }
-                                const itemEdge = {
-                                    id: nodeId,
-                                    // dataType is a sort key, that exists to create
-                                    // a unique record
-                                    "linnet:dataType": `${edge.edgeName}::${
-                                        nestedItem.id
-                                    }`,
-                                    "linnet:namedType": edgeNamedType,
-                                    "linnet:edge": edgeNodeId,
-                                };
                                 items.push(itemEdge);
                             }
                             items.push(nestedItem);

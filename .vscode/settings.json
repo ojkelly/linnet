@@ -5,5 +5,5 @@
         "jspm_packages": true,
         "node_modules": true
     },
-    "todo-tree.flat": false
+    "todo-tree.flat": true
 }

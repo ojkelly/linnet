@@ -1,4 +1,4 @@
-# Tibicen
+# Linnet
 
 From a folder of graphql files, create a schema.
 

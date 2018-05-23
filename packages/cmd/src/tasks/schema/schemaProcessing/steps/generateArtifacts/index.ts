@@ -28,6 +28,7 @@ import { printDirectives } from "../../../util/printer";
 import { generateTypes } from "./generateTypes";
 import { generateInputTypes } from "./generateInputTypes";
 import { generateEdgeInputTypes } from "./generateEdgeInputTypes";
+import { cleanupTypes } from "./cleanupTypes";
 import { generateResolverMappingTemplates } from "../../../resolvers/generateResolverMappingTemplates";
 import {
     createDataSourceTemplate,
@@ -155,18 +156,6 @@ async function generateArtifacts({
         edges,
     });
 
-    // // [ Extract Edges ]----------------------------------------------------------------------------
-    // observer.next("Extracting edges from Schema");
-    // edges = extractEdges({
-    //     ast,
-    //     schema,
-    //     newTypeFields,
-    //     newTypeDataSourceMap,
-    //     newInputTypes,
-    //     dataSourceTemplates,
-    //     config,
-    // });
-
     // [ Create Edge Input Types ]------------------------------------------------------------------
     observer.next("Creating Edge Input Types");
     generateEdgeInputTypes({
@@ -221,10 +210,12 @@ mutation: Mutation
         edges,
         schemaDocument: parse(finalisedTypeDefs),
     });
+
     // [ Finalise Schema ]--------------------------------------------------------------------------
 
-    const strippedTypeDefs = formatAst(schemaDocWithEdges);
-    // console.dir(`${strippedTypeDefs}`);
+    const cleanedAst = cleanupTypes({ ast: schemaDocWithEdges });
+    const strippedTypeDefs = formatAst(cleanedAst);
+    // console.log(`${strippedTypeDefs}`);
 
     // // console.log(JSON.stringify(fullSchemaStr, null, 2));
     // // TODO: Now you need to process the newTypeFields and generate

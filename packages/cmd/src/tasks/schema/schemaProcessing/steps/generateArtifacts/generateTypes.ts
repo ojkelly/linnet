@@ -44,8 +44,6 @@ function generateTypes({
                             const type: GraphQLNamedType = schema.getType(
                                 node.name.value,
                             );
-                            // TODO: Pass the dataSource type to the default Type creators
-                            // as dynamodb, lambda, and elasticsearch all had different added types
                             if (type instanceof GraphQLObjectType === true) {
                                 // Add the default fields
                                 const typeWithDefaults: GraphQLType = addDefaultFieldsToType(

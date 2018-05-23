@@ -28,7 +28,6 @@ import {
 } from "../schemaProcessing/steps/generateArtifacts/extractEdges";
 const pkg = require("../../../../package.json");
 
-import * as createGenerator from "./dynamoDB/create";
 import * as deleteGenerator from "./dynamoDB/delete";
 import * as deleteManyGenerator from "./dynamoDB/delete";
 import * as edgeGenerator from "./dynamoDB/edge";
@@ -50,6 +49,7 @@ import * as upsertGenerator from "./dynamoDB/upsert";
 function generateDynamoDBResolverTemplate({
     dataSource,
     typeName,
+    field,
     fieldName,
     fieldType,
     namedType,
@@ -58,6 +58,7 @@ function generateDynamoDBResolverTemplate({
 }: {
     dataSource: DataSourceTemplate;
     typeName: string;
+    field: string;
     fieldName: string;
     namedType: string;
     fieldType: GraphQLField<any, any, any>;
@@ -79,6 +80,7 @@ function generateDynamoDBResolverTemplate({
         typeName,
         fieldName,
         responseMappingTemplate: generateResponseTemplate({
+            field,
             fieldName,
             fieldType,
             dataSource,
@@ -88,6 +90,7 @@ function generateDynamoDBResolverTemplate({
             headerString,
         }),
         requestMappingTemplate: generateRequestTemplate({
+            field,
             fieldName,
             fieldType,
             namedType,
@@ -134,6 +137,7 @@ function getEdgeForField({
  * @param options
  */
 function generateRequestTemplate({
+    field,
     fieldName,
     fieldType,
     namedType,
@@ -142,6 +146,8 @@ function generateRequestTemplate({
     edges,
     headerString,
 }: {
+    field: string;
+
     fieldName: string;
     namedType: string;
     fieldType: GraphQLField<any, any, any>;
@@ -164,6 +170,7 @@ function generateRequestTemplate({
             });
         case "connection":
             return connectionGenerator.generateRequestTemplate({
+                field,
                 fieldName,
                 fieldType,
                 namedType,
@@ -174,6 +181,7 @@ function generateRequestTemplate({
             });
         case "connectionPlural":
             return connectionPluralGenerator.generateRequestTemplate({
+                field,
                 fieldName,
                 fieldType,
                 namedType,
@@ -288,6 +296,7 @@ function generateRequestTemplate({
  * @param options
  */
 function generateResponseTemplate({
+    field,
     fieldName,
     fieldType,
     namedType,
@@ -296,6 +305,7 @@ function generateResponseTemplate({
     edges,
     headerString,
 }: {
+    field: string;
     fieldName: string;
     namedType: string;
     fieldType: GraphQLField<any, any, any>;
@@ -325,6 +335,7 @@ function generateResponseTemplate({
             });
         case "connection":
             return connectionGenerator.generateResponseTemplate({
+                field,
                 fieldName,
                 fieldType,
                 namedType,
@@ -335,6 +346,7 @@ function generateResponseTemplate({
             });
         case "connectionPlural":
             return connectionPluralGenerator.generateResponseTemplate({
+                field,
                 fieldName,
                 fieldType,
                 namedType,
@@ -354,16 +366,6 @@ function generateResponseTemplate({
                 headerString: header,
             });
         // [ Mutation ]-----------------------------------------------------------------------------
-        case "create":
-            return createGenerator.generateResponseTemplate({
-                fieldName,
-                fieldType,
-                namedType,
-                dataSource,
-                resolverType,
-                edges,
-                headerString: header,
-            });
         case "upsert":
             return upsertGenerator.generateResponseTemplate({
                 fieldName,

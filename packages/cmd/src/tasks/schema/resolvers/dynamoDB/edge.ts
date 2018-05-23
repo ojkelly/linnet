@@ -34,15 +34,6 @@ function generateRequestTemplate({
     edges: Edge[];
     headerString: string;
 }): string | any {
-    // The edge type, only passing in the edge for this field.
-    let edge = edges[0];
-    let index = "";
-
-    // If this edge is not the principle, we need to query the other way around using
-    // the GSI
-    if (edge.principal === EdgePrinciple.FALSE) {
-        index = `"index":"edge-dataType",`;
-    }
     return `${headerString}
 ## ResolverType: ${resolverType}
 
@@ -82,9 +73,6 @@ function generateResponseTemplate({
     edges: Edge[];
     headerString: string;
 }): string | any {
-    // The edge type, only passing in the edge for this field.
-    const edge = edges[0];
-
     // #set(cardinality = "${edge.cardinality}")
 
     // #if(cardinality == "ONE")
@@ -95,13 +83,7 @@ function generateResponseTemplate({
     return `${headerString}
 ## ResolverType: ${resolverType}
 
-#if($ctx.result.items[0])
-  #set($return = $util.map.copyAndRemoveAllKeys($ctx.result.items[0], $linnetFields))
-  $util.toJson($return)
-#else
-  ## TODO: Handle null
-  $util.toJson($ctx.result.items)
-#end
+$util.toJson($util.map.copyAndRemoveAllKeys($ctx.result.items[0], $linnetFields))
 `;
 }
 

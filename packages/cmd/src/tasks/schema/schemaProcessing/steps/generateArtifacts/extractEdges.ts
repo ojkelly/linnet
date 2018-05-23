@@ -155,7 +155,6 @@ function getCardinalityFromType({ type }: { type: TypeNode }): EdgeCardinality {
  * @param options
  */
 function validateEdges({ edges }: { edges: Edge[] }): Edge[] {
-    // TODO: Validate only on side of the edge is marked as the principal
     return edges.map(edge => {
         // First check that this edge appears only One other time
         let updatedEdge = {

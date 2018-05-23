@@ -18,6 +18,8 @@ import {
 } from "../../schemaProcessing/steps/generateArtifacts/extractEdges";
 
 function generateRequestTemplate({
+    field,
+
     fieldName,
     fieldType,
     namedType,
@@ -26,6 +28,8 @@ function generateRequestTemplate({
     edges,
     headerString,
 }: {
+    field: string;
+
     fieldName: string;
     namedType: string;
     fieldType: GraphQLField<any, any, any>;
@@ -36,21 +40,27 @@ function generateRequestTemplate({
 }): string | any {
     const dataSourceConfig: DataSourceDynamoDBConfig = dataSource.config as DataSourceDynamoDBConfig;
 
+    // TODO: we cant find the write edge here, and therefore we dont accurately know how to look
+    // up the relation
+    // we need to pass the edge information at runtime
+
+    // The connection resolver is only passed one edge
     let edge = edges[0];
     let index = "";
     let partitionKeyName = "";
 
     if (edge.principal === EdgePrinciple.TRUE) {
-        index = `"index":"edge-dataType",`;
-        partitionKeyName = `#set($partitionKeyName = 'linnet:edge')`;
+        partitionKeyName = `#set($partitionKeyName = 'id')`;
     }
     // If this edge is not the principle, we need to query the other way around using
     // the GSI
     if (edge.principal === EdgePrinciple.FALSE) {
-        partitionKeyName = `#set($partitionKeyName = 'id')`;
+        index = `"index":"edge-dataType",`;
+        partitionKeyName = `#set($partitionKeyName = 'linnet:edge')`;
     }
 
     return `${headerString}
+
 ## ResolverType: ${resolverType}
 ## Edge: ${JSON.stringify(edge)}
 
@@ -62,9 +72,8 @@ ${partitionKeyName}
   #set($partitionKey = $context.arguments.where.id)
 #end
 
-#if($context.source['${fieldName}'].parentId)
-  #set($partitionKey = $context.source['${fieldName}'].parentId)
-  #set($sortKeyValue = $context.arguments.source.edgeName)
+#if($context.source.id)
+  #set($partitionKey = $context.source.id)
 #end
 
 {
@@ -89,6 +98,8 @@ ${partitionKeyName}
 }
 
 function generateResponseTemplate({
+    field,
+
     fieldName,
     fieldType,
     namedType,
@@ -97,6 +108,7 @@ function generateResponseTemplate({
     edges,
     headerString,
 }: {
+    field: string;
     fieldName: string;
     namedType: string;
     fieldType: GraphQLField<any, any, any>;
@@ -105,28 +117,23 @@ function generateResponseTemplate({
     edges: Edge[];
     headerString: string;
 }): string | any {
+    // The connection resolver is only passed one edge
     let edge = edges[0];
-    let field = "";
+    let edgeField = "";
 
-    if (edge.principal === EdgePrinciple.TRUE) {
-        field = `id`;
+    if (edge.principal === EdgePrinciple.FALSE) {
+        edgeField = `id`;
     }
     // If this edge is not the principle, we need get the edge value
-    if (edge.principal === EdgePrinciple.FALSE) {
-        field = `linnet:edge`;
+    if (edge.principal === EdgePrinciple.TRUE) {
+        edgeField = `linnet:edge`;
     }
 
     return `${headerString}
 ## ResolverType: ${resolverType}
-#set($results = [])
-#foreach($item in $ctx.result.items)
-  #if($item['${field}'])
-      $util.qr($results.add($item['${field}']))
-  #end
-#end
 
 {
-  "edge": $util.toJson($results[0]),
+   "edge": $util.toJson($ctx.result.items[0]['${edgeField}']),
 }
 
 `;

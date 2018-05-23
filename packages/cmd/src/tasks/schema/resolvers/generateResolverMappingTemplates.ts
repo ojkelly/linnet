@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import {
     ResolverTemplate,
     ResolverTemplates,
@@ -65,16 +66,17 @@ function generateResolverMappingTemplates({
     });
     // [ Query Resolvers ]--------------------------------------------------------------------------
 
-    Object.keys(queryTypeMap).forEach(i => {
+    Object.keys(queryTypeMap).forEach(field => {
         // Search for this node in our dataSources
-        if (newTypeDataSourceMap.query[i]) {
-            resolverTemplates[i] = generateDynamoDBResolverTemplate({
+        if (newTypeDataSourceMap.query[field]) {
+            resolverTemplates[field] = generateDynamoDBResolverTemplate({
                 dataSource: dataSourceDynamo,
-                typeName: newTypeDataSourceMap.query[i].typeName,
-                fieldName: newTypeDataSourceMap.query[i].field,
-                fieldType: queryTypeMap[i],
-                resolverType: newTypeDataSourceMap.query[i].resolverType,
-                namedType: newTypeDataSourceMap.query[i].name,
+                field: field,
+                typeName: newTypeDataSourceMap.query[field].typeName,
+                fieldName: newTypeDataSourceMap.query[field].field,
+                fieldType: queryTypeMap[field],
+                resolverType: newTypeDataSourceMap.query[field].resolverType,
+                namedType: newTypeDataSourceMap.query[field].name,
                 edges,
             });
         }
@@ -129,6 +131,7 @@ function generateResolverMappingTemplates({
                         ] = generateDynamoDBResolverTemplate({
                             dataSource,
                             typeName: "Mutation",
+                            field,
                             fieldName: field,
                             fieldType: mutationTypeMap[field],
                             resolverType:
@@ -151,7 +154,7 @@ function generateResolverMappingTemplates({
     });
 
     // [ Edge Type Resolvers ]----------------------------------------------------------------------
-
+    console.dir(edges);
     edges.forEach(edge => {
         // Search for this node in our dataSources
         if (newTypeDataSourceMap.query[edge.fieldType]) {
@@ -163,66 +166,97 @@ function generateResolverMappingTemplates({
 
             switch (dataSource.type) {
                 case DataSource.DynamoDB:
+                    console.log(
+                        "ff",
+                        edge,
+                        edge.fieldType,
+                        newTypeDataSourceMap.query[edge.fieldType],
+                    );
                     // Edge Connection
-                    const edgeName = `${edge.counterpart.type}Connection`;
+                    let connectionTypeName;
+                    let connectionEdgeFieldName;
+
+                    if (edge.cardinality === EdgeCardinality.ONE) {
+                        connectionTypeName = `${
+                            edge.counterpart.type
+                        }Connection`;
+                        connectionEdgeFieldName = `${connectionTypeName}.edge`;
+                    } else if (edge.cardinality === EdgeCardinality.MANY) {
+                        connectionTypeName = `${pluralize.plural(
+                            edge.counterpart.type,
+                        )}Connection`;
+                        connectionEdgeFieldName = `${connectionTypeName}.edges`;
+                    }
                     resolverTemplates[
-                        `${edge.fieldType}.${edge.field}`
+                        `${edge.typeName}.${edge.field}`
                     ] = generateDynamoDBResolverTemplate({
+                        field: edge.counterpart.type,
                         dataSource,
                         typeName: edge.typeName,
                         fieldName: edge.field,
                         fieldType: queryTypeMap[edge.fieldType],
                         resolverType:
-                            newTypeDataSourceMap.query[edgeName].resolverType,
+                            newTypeDataSourceMap.query[connectionTypeName]
+                                .resolverType,
 
-                        namedType: newTypeDataSourceMap.query[edgeName].name,
+                        namedType:
+                            newTypeDataSourceMap.query[connectionTypeName].name,
                         edges: [edge],
                     });
                     resolverTemplates[
-                        `${edgeName}.edge`
+                        connectionEdgeFieldName
                     ] = generateDynamoDBResolverTemplate({
+                        field: edge.fieldType,
                         dataSource,
-                        typeName: edgeName,
-                        fieldName: "edge",
+                        typeName: connectionTypeName,
+                        fieldName:
+                            edge.cardinality === EdgeCardinality.ONE
+                                ? "edge"
+                                : "edges",
                         fieldType: queryTypeMap[edge.fieldType],
-                        resolverType: "edge",
+                        resolverType:
+                            edge.cardinality === EdgeCardinality.ONE
+                                ? "edge"
+                                : "edges",
                         namedType:
                             newTypeDataSourceMap.query[edge.typeName].name,
                         edges: [edge],
                     });
 
-                    // Counterpart Connection
-                    const counterpartName = `${pluralize.plural(
-                        edge.counterpart.type,
-                    )}Connection`;
+                    // // Counterpart Connection
+                    // const counterpartName = `${pluralize.plural(
+                    //     edge.counterpart.type,
+                    // )}Connection`;
 
-                    resolverTemplates[
-                        `${edge.counterpart.type}.${edge.counterpart.field}`
-                    ] = generateDynamoDBResolverTemplate({
-                        dataSource,
-                        typeName: edge.counterpart.type,
-                        fieldName: edge.counterpart.field,
-                        fieldType: queryTypeMap[edge.counterpart.type],
-                        resolverType:
-                            newTypeDataSourceMap.query[counterpartName]
-                                .resolverType,
-                        namedType:
-                            newTypeDataSourceMap.query[counterpartName].name,
-                        edges: [edge],
-                    });
-                    resolverTemplates[
-                        `${counterpartName}.edges`
-                    ] = generateDynamoDBResolverTemplate({
-                        dataSource,
-                        typeName: counterpartName,
-                        fieldName: "edges",
-                        fieldType: queryTypeMap[edge.counterpart.type],
-                        resolverType: "edges",
-                        namedType:
-                            newTypeDataSourceMap.query[edge.counterpart.type]
-                                .name,
-                        edges: [edge],
-                    });
+                    // resolverTemplates[
+                    //     `${edge.counterpart.type}.${edge.counterpart.field}`
+                    // ] = generateDynamoDBResolverTemplate({
+                    //     field: edge.counterpart.type,
+                    //     dataSource,
+                    //     typeName: edge.counterpart.type,
+                    //     fieldName: edge.counterpart.field,
+                    //     fieldType: queryTypeMap[edge.counterpart.type],
+                    //     resolverType:
+                    //         newTypeDataSourceMap.query[counterpartName]
+                    //             .resolverType,
+                    //     namedType:
+                    //         newTypeDataSourceMap.query[counterpartName].name,
+                    //     edges: [edge],
+                    // });
+                    // resolverTemplates[
+                    //     `${counterpartName}.edges`
+                    // ] = generateDynamoDBResolverTemplate({
+                    //     field: edge.fieldType,
+                    //     dataSource,
+                    //     typeName: counterpartName,
+                    //     fieldName: "edges",
+                    //     fieldType: queryTypeMap[edge.counterpart.type],
+                    //     resolverType: "edges",
+                    //     namedType:
+                    //         newTypeDataSourceMap.query[edge.counterpart.type]
+                    //             .name,
+                    //     edges: [edge],
+                    // });
 
                     break;
                 case DataSource.ElasticSearch:

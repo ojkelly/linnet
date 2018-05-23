@@ -8,7 +8,7 @@
     "workspaces": ["packages/cmd"],
     "scripts": {
         "dev": "ava-ts ./**/*.spec.ts --watch",
-        "cli": "ts-node packages/cmd/",
+        "cli": "ts-node packages/cmd/src/",
         "dev-aws":
             "ts-node tests/assumeRole.ts assumeRole --command 'ava-ts ./tests/**/*.spec.ts --watch'",
         "debug": "DEBUG='wahn:*,bunjil:*' yarn dev",
