@@ -154,7 +154,7 @@ function generateResolverMappingTemplates({
     });
 
     // [ Edge Type Resolvers ]----------------------------------------------------------------------
-    console.dir(edges);
+
     edges.forEach(edge => {
         // Search for this node in our dataSources
         if (newTypeDataSourceMap.query[edge.fieldType]) {
@@ -166,12 +166,6 @@ function generateResolverMappingTemplates({
 
             switch (dataSource.type) {
                 case DataSource.DynamoDB:
-                    console.log(
-                        "ff",
-                        edge,
-                        edge.fieldType,
-                        newTypeDataSourceMap.query[edge.fieldType],
-                    );
                     // Edge Connection
                     let connectionTypeName;
                     let connectionEdgeFieldName;

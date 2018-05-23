@@ -41,10 +41,6 @@ function generateRequestTemplate({
     // The connection resolver is only passed one edge
     let edge = edges[0];
 
-    console.log({
-        edge: edges[0],
-    });
-
     let index = "";
     let partitionKeyName = "";
 
@@ -127,7 +123,7 @@ function generateResponseTemplate({
     if (edge.principal === EdgePrinciple.TRUE) {
         edgeField = `linnet:edge`;
     }
-    // If this edge is not the principle, we need get the edge value
+
     if (edge.principal === EdgePrinciple.FALSE) {
         edgeField = `id`;
     }
