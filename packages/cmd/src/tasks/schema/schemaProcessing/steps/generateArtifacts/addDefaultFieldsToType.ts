@@ -27,6 +27,8 @@ import {
     FieldDefinitionNode,
     subscribe,
     NonNullTypeNode,
+    GraphQLEnumType,
+    GraphQLScalarType,
 } from "graphql";
 import { mergeAst, mergeStrings } from "gql-merge";
 import { formatString, formatAst } from "gql-format";
@@ -40,7 +42,7 @@ import { Config } from "../../../../common/types";
  * createdAt: DateTime!
  * updatedAt: DateTime!
  */
-function addDefaultFieldsToType(type: GraphQLObjectType): GraphQLObjectType {
+function addDefaultFieldsToType(type: GraphQLObjectType, NodeState: GraphQLScalarType): GraphQLObjectType {
     (type as GraphQLObjectType).getFields().id = {
         name: "id",
         type: new GraphQLNonNull(GraphQLID),
@@ -51,23 +53,30 @@ function addDefaultFieldsToType(type: GraphQLObjectType): GraphQLObjectType {
     (type as GraphQLObjectType).getFields().createdAt = {
         name: "createdAt",
         type: new GraphQLNonNull(GraphQLString),
-        description: "", //"The time this entity was created.",
+        description: "",
         args: [],
     };
 
     (type as GraphQLObjectType).getFields().updatedAt = {
         name: "updatedAt",
         type: new GraphQLNonNull(GraphQLString),
-        description: "", //"The time this entity was last updated",
+        description: "",
         args: [],
     };
 
     (type as GraphQLObjectType).getFields().createdBy = {
         name: "createdBy",
         type: new GraphQLNonNull(GraphQLID),
-        description: "", //"The userId that created the node.",
+        description: "",
         args: [],
     };
+
+    (type as GraphQLObjectType).getFields().nodeState = {
+      name: "nodeState",
+      type: NodeState,
+      description: "",
+      args: [],
+  };
 
     return type;
 }

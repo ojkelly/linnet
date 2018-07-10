@@ -215,7 +215,7 @@ mutation: Mutation
 
     const cleanedAst = cleanupTypes({ ast: schemaDocWithEdges });
     const strippedTypeDefs = formatAst(cleanedAst);
-    // console.log(`${strippedTypeDefs}`);
+    console.log(`${strippedTypeDefs}`);
 
     // // console.log(JSON.stringify(fullSchemaStr, null, 2));
     // // TODO: Now you need to process the newTypeFields and generate

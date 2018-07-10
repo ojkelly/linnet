@@ -28,6 +28,7 @@ function appSyncSchemaTask({
                     observer,
                 });
             } catch (err) {
+              console.error(err)
                 throw err;
             }
         }

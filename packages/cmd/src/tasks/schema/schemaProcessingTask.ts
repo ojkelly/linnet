@@ -33,6 +33,7 @@ function schemaProcessingTask({
                     observer,
                 },
             );
+
             context.schema.resolverTemplates =
                 processSchemaReturn.resolverTemplates;
             context.schema.dataSourceTemplates =

@@ -10,7 +10,17 @@ Allow you to overwrite the resolver mappings.
 
 https://github.com/maddijoyce/maddis-aws-tools/blob/master
 
-TODO
+
+## TODOS
+
+TODO: Resolver for [upsert]
+TODO: Resolver for [update]
+TODO: Resolver for [updateMany]
+TODO: Resolver for []
+
+----
+
+### Notes
 
 TODO: Add resolver to relationship fields
 

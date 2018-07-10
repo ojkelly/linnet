@@ -3,6 +3,7 @@ import {
     GraphQLNamedType,
     GraphQLType,
     GraphQLObjectType,
+    GraphQLScalarType,
 } from "graphql";
 import { addDefaultFieldsToType } from "./addDefaultFieldsToType";
 import { generateDynamoDBDataSourceTemplate } from "../../../dataSources/dynamoDB";
@@ -19,6 +20,30 @@ function generateTypes({
     config,
     edges,
 }) {
+    let NodeState: GraphQLScalarType | undefined = undefined;
+
+    // Extract the NodeState first
+    // We do this here, to avoide duplicate types in the schema doc
+    visit(ast, {
+        enter: (
+            node: any,
+            key: any,
+            parent: any,
+            path: any,
+            ancestors: any,
+        ) => {
+            if (
+                node.kind === "NamedType" &&
+                node.name &&
+                node.name.value === "NodeState"
+            ) {
+                NodeState = schema.getType(
+                  node.name.value,
+              );
+            }
+        },
+    });
+
     visit(ast, {
         enter: (
             node: any,
@@ -48,6 +73,7 @@ function generateTypes({
                                 // Add the default fields
                                 const typeWithDefaults: GraphQLType = addDefaultFieldsToType(
                                     type as GraphQLObjectType,
+                                    NodeState,
                                 );
 
                                 // Add the default Types

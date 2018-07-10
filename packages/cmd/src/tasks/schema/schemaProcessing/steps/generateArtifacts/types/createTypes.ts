@@ -207,9 +207,9 @@ function createTypes({
         name: `create${node.name.value}`,
         type: type,
         args: {
-            create: {
+            data: {
                 type: new GraphQLNonNull(
-                    newInputTypes[`${node.name.value}Create`],
+                    newInputTypes[`${node.name.value}Data`],
                 ),
             },
         },
@@ -225,14 +225,9 @@ function createTypes({
         name: `upsert${node.name.value}`,
         type: type,
         args: {
-            create: {
+            data: {
                 type: new GraphQLNonNull(
-                    newInputTypes[`${node.name.value}Create`],
-                ),
-            },
-            update: {
-                type: new GraphQLNonNull(
-                    newInputTypes[`${node.name.value}Update`],
+                    newInputTypes[`${node.name.value}Data`],
                 ),
             },
             where: {
@@ -252,9 +247,9 @@ function createTypes({
         name: `update${node.name.value}`,
         type: type,
         args: {
-            update: {
+            data: {
                 type: new GraphQLNonNull(
-                    newInputTypes[`${node.name.value}Update`],
+                    newInputTypes[`${node.name.value}Data`],
                 ),
             },
             where: {
@@ -274,11 +269,12 @@ function createTypes({
         name: `updateMany${pluralize.plural(node.name.value)}`,
         type: newInputTypes["BatchPayload"],
         args: {
-            update: {
+            data: {
                 type: new GraphQLNonNull(
-                    new GraphQLList(newInputTypes[`${node.name.value}Update`]),
+                    new GraphQLList(newInputTypes[`${node.name.value}Data`]),
                 ),
             },
+            // TODO: add custom where fields to this
             where: {
                 type: new GraphQLNonNull(
                     newInputTypes[`${node.name.value}Where`],
