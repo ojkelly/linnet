@@ -33,7 +33,7 @@ import * as createGenerator from "./lambda/create";
 // import * as deleteManyGenerator from "./lambda/delete";
 // import * as updateGenerator from "./lambda/update";
 // import * as updateManyGenerator from "./lambda/updateMany";
-// import * as upsertGenerator from "./lambda/upsert";
+import * as upsertGenerator from "./lambda/upsert";
 
 // $util.error($util.toJson($ctx))
 
@@ -73,6 +73,7 @@ function generateLambdaResolverTemplate({
         name: `Mutation`,
         resolverType,
     });
+
     return {
         dataSourceName: lambdaDataSource.name,
         typeName,
@@ -161,16 +162,16 @@ function generateRequestTemplate({
                 edges,
                 headerString,
             });
-        // case "upsert":
-        //     return upsertGenerator.generateRequestTemplate({
-        //         fieldName,
-        //         fieldType,
-        //         namedType,
-        //         dataSource,
-        //         resolverType,
-        //         edges,
-        //         headerString,
-        //     });
+        case "upsert":
+            return upsertGenerator.generateRequestTemplate({
+                fieldName,
+                fieldType,
+                namedType,
+                dataSource,
+                resolverType,
+                edges,
+                headerString,
+            });
         // case "update":
         //     return updateGenerator.generateRequestTemplate({
         //         fieldName,
@@ -236,16 +237,16 @@ function generateResponseTemplate({
                 edges,
                 headerString: header,
             });
-        // case "upsert":
-        //     return upsertGenerator.generateResponseTemplate({
-        //         fieldName,
-        //         fieldType,
-        //         namedType,
-        //         dataSource,
-        //         resolverType,
-        //         edges,
-        //         headerString: header,
-        //     });
+        case "upsert":
+            return upsertGenerator.generateResponseTemplate({
+                fieldName,
+                fieldType,
+                namedType,
+                dataSource,
+                resolverType,
+                edges,
+                headerString: header,
+            });
         // case "update":
         //     return updateGenerator.generateResponseTemplate({
         //         fieldName,

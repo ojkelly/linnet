@@ -213,16 +213,16 @@ function generateRequestTemplate({
         //         edges,
         //         headerString,
         //     });
-        case "upsert":
-            return upsertGenerator.generateRequestTemplate({
-                fieldName,
-                fieldType,
-                namedType,
-                dataSource,
-                resolverType,
-                edges,
-                headerString,
-            });
+        // case "upsert":
+        //     return upsertGenerator.generateRequestTemplate({
+        //         fieldName,
+        //         fieldType,
+        //         namedType,
+        //         dataSource,
+        //         resolverType,
+        //         edges,
+        //         headerString,
+        //     });
         case "update":
             return updateGenerator.generateRequestTemplate({
                 fieldName,
@@ -366,16 +366,16 @@ function generateResponseTemplate({
                 headerString: header,
             });
         // [ Mutation ]-----------------------------------------------------------------------------
-        case "upsert":
-            return upsertGenerator.generateResponseTemplate({
-                fieldName,
-                fieldType,
-                namedType,
-                dataSource,
-                resolverType,
-                edges,
-                headerString: header,
-            });
+        // case "upsert":
+        //     return upsertGenerator.generateResponseTemplate({
+        //         fieldName,
+        //         fieldType,
+        //         namedType,
+        //         dataSource,
+        //         resolverType,
+        //         edges,
+        //         headerString: header,
+        //     });
         case "update":
             return updateGenerator.generateResponseTemplate({
                 fieldName,

@@ -29,5 +29,5 @@ development:
               writeCapacityUnits: 5
     Lambda:
       System:
-        serviceRoleArn: arn:aws:iam::354684684:role/appsync-lambda
+        serviceRoleArn: arn:aws:iam::354684684:role/appsync-test
 

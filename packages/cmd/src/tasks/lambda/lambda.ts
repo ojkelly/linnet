@@ -59,6 +59,7 @@ async function upsertLambda({
                 Description: `Lambda function for linnet resolver type: ${resolverType}`,
                 FunctionName: functionName,
                 Handler: "index.handler",
+                // TODO: make memorySize configurable
                 MemorySize: 256,
                 Publish: true,
                 Role: config.dataSources.Lambda.System.serviceRoleArn,

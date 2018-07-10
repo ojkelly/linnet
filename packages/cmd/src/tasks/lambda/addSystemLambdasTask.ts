@@ -9,7 +9,14 @@ import {
     DataSourceLambdaConfig,
 } from "../../tasks/schema/dataSources/dataSources";
 
-const resolverTypes = ["create"];
+const resolverTypes = [
+  "create",
+  "upsert",
+  // "update",
+  // "updateMany",
+  // "delete",
+  // "deleteMany",
+];
 
 /**
  * Process the Schema

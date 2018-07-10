@@ -73,7 +73,7 @@ function addDefaultFieldsToType(type: GraphQLObjectType, NodeState: GraphQLScala
 
     (type as GraphQLObjectType).getFields().nodeState = {
       name: "nodeState",
-      type: NodeState,
+      type: new GraphQLNonNull(NodeState),
       description: "",
       args: [],
   };

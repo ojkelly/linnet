@@ -101,9 +101,9 @@ function generateResolverMappingTemplates({
                 case DataSource.DynamoDB:
                     if (
                         newTypeDataSourceMap.mutation[field].resolverType ===
-                        "create"
-                        // newTypeDataSourceMap.mutation[field].resolverType ===
-                        //     "upsert" ||
+                        "create" ||
+                        newTypeDataSourceMap.mutation[field].resolverType ===
+                            "upsert"
                         // newTypeDataSourceMap.mutation[field].resolverType ===
                         //     "update" ||
                         // newTypeDataSourceMap.mutation[field].resolverType ===

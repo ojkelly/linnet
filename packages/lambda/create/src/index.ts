@@ -238,14 +238,14 @@ function generateWriteItem({
             })
             .filter(Boolean);
 
-        if (createInput.create) {
+        if (createInput.data) {
             const nodesToCreate = [];
 
             // Handle GraphQLList types the same as NamedTypes
-            if (Array.isArray(createInput.create)) {
-                nodesToCreate.push(...createInput.create);
+            if (Array.isArray(createInput.data)) {
+                nodesToCreate.push(...createInput.data);
             } else {
-                nodesToCreate.push(createInput.create);
+                nodesToCreate.push(createInput.data);
             }
 
             nodesToCreate.forEach(createNode => {
@@ -339,12 +339,12 @@ function generateWriteItem({
         if (createInput.connections) {
             // TODO: add connections (create a connection from the id, but dont create a node)
             // Create any Connections
-            //   Object.keys(createInput.create).forEach(fieldName => {
+            //   Object.keys(createInput.data).forEach(fieldName => {
             //     const edge = edgesOnThisType.find(
             //         edge => edge.field == fieldName,
             //     );
             //     console.log(edge);
-            //     const field = createInput.create[fieldName];
+            //     const field = createInput.data[fieldName];
             // });
         }
 
