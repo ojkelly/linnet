@@ -5,28 +5,19 @@ import { upsert } from "./commands/upsert";
 import * as Ora from "ora";
 import { DataSourceDynamoDBConfig } from "./tasks/schema/dataSources/dataSources";
 import {
+  CreateInput,
+  UpsertInput,
+  UpdateInput,
+  UpdateManyInput,
+  DeleteInput,
+  DeleteManyInput,
+  HandlerEvent,
+ } from "./tasks/schema/resolvers/lambda/types";
+import {
     Edge,
     EdgePrinciple,
 } from "./tasks/schema/schemaProcessing/steps/generateArtifacts/extractEdges";
 
-type CreateInput = {
-    create?: {
-        [key: string]: any;
-    };
-    connections?: string[];
-};
-
-type HandlerEvent = {
-    linnetFields: string[];
-    dataSource: DataSourceDynamoDBConfig;
-    namedType: string;
-    edgeTypes: Edge[];
-    context: {
-        arguments: CreateInput | any;
-        result: any;
-        source: any;
-    };
-};
 
 const pkg = require("../package.json");
 
@@ -73,9 +64,14 @@ program
 program.parse(process.argv);
 
 export {
-    HandlerEvent,
-    CreateInput,
     Edge,
     EdgePrinciple,
     DataSourceDynamoDBConfig,
+    CreateInput,
+    UpsertInput,
+    UpdateInput,
+    UpdateManyInput,
+    DeleteInput,
+    DeleteManyInput,
+    HandlerEvent,
 };

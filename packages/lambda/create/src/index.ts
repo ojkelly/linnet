@@ -37,8 +37,8 @@ async function handler(event: HandlerEvent, context: Context) {
         console.log(JSON.stringify(event));
 
         // Process the event
-        if (typeof event.context.arguments.create === "undefined") {
-            throw new Error("No create argument supplied.");
+        if (typeof event.context.arguments.data === "undefined") {
+            throw new Error("No data argument supplied.");
         }
         const result: any = await processEvent({
             segment,

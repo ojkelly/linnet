@@ -10,7 +10,7 @@
         "dev": "ava-ts ./**/*.spec.ts --watch",
         "cli": "ts-node packages/cmd/src/",
         "dev-aws":
-            "ts-node tests/assumeRole.ts assumeRole --command 'ava-ts ./tests/**/*.spec.ts --watch'",
+            "ts-node tests/assumeRole.ts assumeRole --command 'ava-ts ./**/*.spec.ts --watch'",
         "debug": "DEBUG='wahn:*,bunjil:*' yarn dev",
         "clean": "rimraf ./lib ./.nyc_output ./coverage",
         "build": "tsc -p tsconfig.json",
@@ -24,7 +24,7 @@
             "find packages/lambda/ -type d -maxdepth 1 -mindepth 1 -exec bash -c ' cd {} && pwd && yarn build' \\;",
         "lambda:zip":
             "ls -t packages/lambda | head -n 3 | xargs -I '{}' bash -c 'cd packages/lambda/{} && zip -rq ../../../.dist/lambda/{}.zip  ./*'",
-        "unit": "nyc ava",
+        "unit": "ava-ts ./**/*.spec.ts",
         "check-coverage":
             "nyc check-coverage --lines 10 --functions 10 --branches 10",
         "test": "yarn unit && yarn check-coverage",

@@ -167,7 +167,7 @@ function getFieldsForInputType({
                             ] = new GraphQLInputObjectType({
                                 name: newFieldName,
                                 fields: () => ({
-                                    create: {
+                                    data: {
                                         type: newInputTypes[newInnerFieldName],
                                     },
                                     connection: {
@@ -183,7 +183,7 @@ function getFieldsForInputType({
                             ] = new GraphQLInputObjectType({
                                 name: newFieldName,
                                 fields: () => ({
-                                    create: {
+                                    data: {
                                         type: new GraphQLList(
                                             newInputTypes[newInnerFieldName],
                                         ),

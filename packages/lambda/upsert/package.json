@@ -1,13 +1,29 @@
 {
-    "name": "linnet-lambda-upsert",
-    "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT",
-    "scripts": {
-        "clean": "rimraf ./lib ./.nyc_output ./coverage",
-        "build": "yarn clean && tsc -p tsconfig.json"
-    },
-    "dependencies": {
-        "aws-xray-sdk-core": "^1.2.0"
-    }
+  "name": "linnet-lambda-upsert",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+      "clean": "rimraf ./lib ./.nyc_output ./coverage",
+      "build": "yarn clean && tsc -p tsconfig.json"
+  },
+  "dependencies": {
+      "@types/node": "^6.0.110",
+      "@types/uuid": "^3.4.3",
+      "aws-lambda": "^0.1.2",
+      "aws-xray-sdk-core": "^1.2.0",
+      "continuation-local-storage": "^3.2.1",
+      "linnet": "^0.4.0",
+      "lodash.chunk": "^4.2.0",
+      "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+      "ava": "^0.25.0",
+      "aws-lambda-mock-context": "^3.1.1",
+      "aws-lambda-test-utils": "^1.3.0",
+      "aws-sdk-mock": "^2.0.0",
+      "faker": "^4.1.0",
+      "rimraf": "^2.6.2",
+      "util": "^0.10.3"
+  }
 }
