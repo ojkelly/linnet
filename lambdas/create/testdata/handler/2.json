@@ -1,0 +1,111 @@
+{
+  "linnetFields": ["linnet:dataType", "linnet:edge", "linnet:namedType"],
+  "dataSource": {
+    "tableName": "DynamoDBTestTable",
+    "awsRegion": "us-east-1",
+    "useCallerCredentials": false
+  },
+  "namedType": "Customer",
+  "edgeTypes": [
+    {
+      "typeName": "Customer",
+      "field": "orders",
+      "fieldType": "Order",
+      "principal": "TRUE",
+      "cardinality": "MANY",
+      "edgeName": "OrdersOnCustomer",
+      "required": false,
+      "counterpart": { "type": "Customer", "field": "customer" }
+    },
+    {
+      "typeName": "Order",
+      "field": "customer",
+      "fieldType": "Customer",
+      "principal": "FALSE",
+      "cardinality": "ONE",
+      "edgeName": "OrdersOnCustomer",
+      "required": true,
+      "counterpart": { "type": "Order", "field": "orders" }
+    },
+    {
+      "typeName": "Order",
+      "field": "products",
+      "fieldType": "Product",
+      "principal": "TRUE",
+      "cardinality": "MANY",
+      "edgeName": "ProductsOnOrders",
+      "required": true,
+      "counterpart": { "type": "Order", "field": "orders" }
+    },
+    {
+      "typeName": "Product",
+      "field": "orders",
+      "fieldType": "Order",
+      "principal": "FALSE",
+      "cardinality": "MANY",
+      "edgeName": "ProductsOnOrders",
+      "required": false,
+      "counterpart": { "type": "Product", "field": "products" }
+    }
+  ],
+  "context": {
+    "arguments": {
+      "data": {
+        "name": "customer name",
+        "address": "asdasda",
+        "suburb": "w4egrw4g5",
+        "postcode": "sfefsd",
+        "phoneNumber": "239487y789234",
+        "email": "dsarggsdrf@dsfgfsd.sfd",
+        "orders": {
+          "data": [
+            {
+              "status": "COMPLETE",
+              "products": {
+                "data": [
+                  {
+                    "title": "Product 23423",
+                    "description": "This is another product",
+                    "price": "33"
+                  }
+                ]
+              },
+              "price": 99,
+              "paid": true
+            }
+          ]
+        }
+      }
+    },
+    "identity": null,
+    "source": null,
+    "result": null,
+    "request": {
+      "headers": {
+        "x-forwarded-for": "1.1.1.1",
+        "accept-encoding": "gzip, deflate",
+        "connection": "keep-alive",
+        "cloudfront-is-tablet-viewer": "false",
+        "cloudfront-viewer-country": "AU",
+        "via": "2.0 00000.cloudfront.net (CloudFront)",
+        "x-api-key": "XXX-XXXXXXXXXXXXXXXXXX",
+        "cloudfront-forwarded-proto": "https",
+        "content-type": "application/json",
+        "origin": "null",
+        "x-amz-cf-id": "xxxxxxxxxxxxxxxxx",
+        "content-length": "",
+        "x-forwarded-proto": "https",
+        "host": "xxxxx.appsync-api.ap-southeast-2.amazonaws.com",
+        "accept-language": "en-GB",
+        "user-agent": "Mozilla",
+        "cloudfront-is-desktop-viewer": "true",
+        "accept": "*/*",
+        "cloudfront-is-mobile-viewer": "false",
+        "x-forwarded-port": "443",
+        "cloudfront-is-smarttv-viewer": "false"
+      }
+    },
+    "error": null,
+    "outErrors": []
+  }
+}

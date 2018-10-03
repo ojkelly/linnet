@@ -1,0 +1,38 @@
+type Customer implements Node {
+    name: String
+    address: String
+    suburb: String
+    postcode: String
+    phoneNumber: String
+    email: String
+
+    orders: [Order] @edge(name: "OrdersOnCustomer", principal: true)
+}
+
+# mutation {
+#   createCustomer(create:{
+#     name: "customer name"
+#     address: "asdasda",
+#     suburb: "w4egrw4g5",
+#     postcode:"sfefsd",
+#     phoneNumber:"239487y789234",
+#     email:"dsarggsdrf@dsfgfsd.sfd"
+#     orders: {
+#       create: {
+#         status: COMPLETE,
+#         price: 99,
+#         paid: true,
+#         products: {
+#           create: {
+#             title: "Product 23423",
+#             description: "This is another product",
+#             price: "33",
+#           }
+#         }
+#       }
+#     }
+#   }){
+#     id
+#     name
+#   }
+# }

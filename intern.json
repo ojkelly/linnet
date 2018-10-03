@@ -1,0 +1,6 @@
+{
+  "plugins": "./node_modules/ts-node/register/index.js",
+  "suites": ["lib/**/*.spec.js"],
+  "coverage": ["lib/src/**/!(*.spec).js"],
+  "reporters": [{ "name": "lcov" }, { "name": "pretty" }]
+}

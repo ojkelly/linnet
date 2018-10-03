@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "allowJs": false,
+    "allowSyntheticDefaultImports": false,
+    "target": "es6",
+    "module": "commonjs",
+    "inlineSources": true,
+    "inlineSourceMap": false,
+    "isolatedModules": false,
+    "lib": ["esnext", "dom"],
+    "noEmit": false,
+    "outDir": "./lib/",
+    "declaration": true
+  },
+  "filesGlob": ["./src/**/*.ts", "./tests/**/*.ts"],
+  "exclude": ["**/node_modules", "./lib/**", "./legacy"]
+}
